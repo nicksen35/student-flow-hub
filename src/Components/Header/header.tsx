@@ -1,7 +1,8 @@
 import { FC } from "react"
+import { useState } from "react"
 
 type headerprop = {
-    headerTitle: string
+    headerTitle: string;
 }
 
 type searchbarprop = {
@@ -10,18 +11,28 @@ type searchbarprop = {
 
 
 const Title:FC<headerprop> = (props) => {
-    return <h1 className="headertitle"> {props.headerTitle} </h1>
+    return (
+        <>
+            
+            <h1 className="headertitle"> {props.headerTitle} </h1>
+        </>
+    )
 }
 
 const HamburgerMenu:FC = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const toggleMenu = () => {
+        setIsOpen(!isOpen)
+    }
     return(
-        <div className="hamburgermenucontainer"> 
-        <div className="hamburgermenu"> </div>
-        <div className="hamburgermenu"> </div>
-        <div className="hamburgermenu"> </div>
+        <div className={`hamburgermenucontainer ${isOpen ? 'open' : ''}`} onClick={toggleMenu}> 
+        <div className="hamburgermenu1"> </div>
+        <div className="hamburgermenu2" > </div>
+        <div className="hamburgermenu3"> </div>
         </div>
     )
 }
+
 
 
 const SearchBar:FC<searchbarprop> = (prop) => {

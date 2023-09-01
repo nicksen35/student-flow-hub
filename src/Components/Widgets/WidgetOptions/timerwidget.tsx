@@ -6,7 +6,7 @@ const TimerWidget: FC = () => {
     <>
       <div className="timerwidget">
         <div className="timerwidgetheader">
-          <WidgetTitle widgettitle="Timer" />
+          <WidgetTitle widgettitle="Timer" imageSource="src\assets\Timer.png"/>
         </div>
       </div>
     </>

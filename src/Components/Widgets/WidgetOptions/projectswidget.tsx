@@ -6,7 +6,7 @@ const ProjectsWidget: FC = () => {
     <>
       <div className="projectswidget">
         <div className="projectswidgetheader">
-          <WidgetTitle widgettitle="Projects" />
+          <WidgetTitle widgettitle="Projects" imageSource="src\assets\Projects.png"/>
         </div>
       </div>
     </>

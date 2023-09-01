@@ -6,7 +6,7 @@ const ToDoWidget: FC = () => {
     <>
       <div className="todowidget">
         <div className="todowidgetheader">
-          <WidgetTitle widgettitle="To-Do List" />
+          <WidgetTitle widgettitle="To-Do List" imageSource="src\assets\ToDoList.png"/>
         </div>
       </div>
     </>

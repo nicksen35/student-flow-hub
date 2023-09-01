@@ -18,6 +18,7 @@ $onepx-solid: 1px solid black;
   padding-bottom:1%;
   padding-top:1%;
   height:100%;
+  
 }
 
 .headerelementscontainer
@@ -47,7 +48,7 @@ $onepx-solid: 1px solid black;
   text-indent:5%;
 }
 
-.hamburgermenu
+.hamburgermenu1, .hamburgermenu2, .hamburgermenu3
 {
   width: 40px;
   height: 7px;
@@ -60,6 +61,23 @@ $onepx-solid: 1px solid black;
   margin-top:0.5%;
   margin-left:2%;
   margin-right:1%;
+
+}
+.hamburgermenucontainer:hover
+{
+  cursor: pointer;
+}
+
+.hamburgermenucontainer.open .hamburgermenu1 {
+  transform: rotate(-45deg) translate(-15px, 6px);
+}
+
+.hamburgermenucontainer.open .hamburgermenu2 {
+  opacity: 0;
+}
+
+.hamburgermenucontainer.open .hamburgermenu3 {
+  transform: rotate(45deg) translate(-15px, -6px);
 }
 .headertitle
 {
@@ -82,17 +100,22 @@ $onepx-solid: 1px solid black;
 {
   text-align:center;
   font-size:28px;
+  margin-right:1.5%;
 }
 .widgettitleborder
 {
+  display:flex;
+  align-items: center;
+  justify-content: center;
   border-top: $onepx-solid;
-  border-bottom: $onepx-solid
+  border-bottom: $onepx-solid;
 }
 .topwidgetcontainer
 {
   display:flex;
   margin-top:2%;
-  column-gap:2%;
+  column-gap:1%;
+  overflow-x:hidden;
 }
 .calendarwidgetheader {
   
@@ -129,13 +152,13 @@ $onepx-solid: 1px solid black;
   border: $onepx-solid;
   border-top: 0;
   flex:0.8; 
-  height:100vh;
+  height:80vh;
 }
 .bottomwidgetcontainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-column-gap: 20px;
-  width: 73.55%;
+  width: 74.2%;
   justify-content: space-between;
   position: absolute;
   top:60%;
@@ -147,5 +170,12 @@ $onepx-solid: 1px solid black;
 .timerwidget, .projectswidget, .todowidget
 {
   border: $onepx-solid;
-  height:57.3vh;
+  border-top:0;
+  height:37.3vh;
+}
+
+.widgetimage
+{
+  height:50px;
+  margin-right:1.5%;
 }

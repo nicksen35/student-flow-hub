@@ -6,7 +6,7 @@ const GmailWidget: FC = () => {
     <>
       <div className="gmailwidget">
         <div className="gmailwidgetheader">
-          <WidgetTitle widgettitle="Gmail" />
+          <WidgetTitle widgettitle="Gmail" imageSource="src\assets\GmailLogo.png"/>
         </div>
       </div>
     </>

@@ -6,7 +6,7 @@ const ClassroomWidget: FC = () => {
     <>
       <div className="classroomwidget">
         <div className="classroomwidgetheader">
-          <WidgetTitle widgettitle="Google Classroom" />
+          <WidgetTitle widgettitle="Google Classroom" imageSource="src\assets\Google_Classroom_Logo.png"/>
         </div>
       </div>
     </>
