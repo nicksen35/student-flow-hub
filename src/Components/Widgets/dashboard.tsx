@@ -1,9 +1,8 @@
 
 import {useState} from 'react'
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link, useNavigate } from 'react-router-dom';
 import { FC } from "react";
 import WidgetTitle from "../Widgets/widgettitle";
-import ClassroomWidgetPage from './WidgetOptions/classroomwidget';
 
 interface WidgetProp {
     onClick: () => void;
@@ -83,48 +82,21 @@ interface WidgetProp {
 
 
 const Dashboard = () => {
-  const [activeWidget, setActiveWidget] = useState("");
-  console.log(activeWidget)
-  const renderWidgetPage = () => {
-    switch (activeWidget) {
-      case 'Google Classroom':
-        console.log("HEllo");
-        return (
-          <ClassroomWidgetPage />
-        ) 
-      /*case 'Google Calendar':
-        return <CalendarWidgetPage />;
-      case 'Gmail':
-        return <GmailWidgetPage />;
-      case 'To-Do List':
-        return <ToDoWidgetPage />;
-      case 'Projects':
-        return <ProjectsWidgetPage />;
-      case 'Timer':
-        return <TimerWidgetPage />; */
-      default:
-        return null;
-    }}
+  const navigate = useNavigate()
   return (
     <>
-    <Router>
-    {activeWidget === "" ? (
       <div className="widgetcontainer">
         <div className="topwidgetcontainer">
-          <ClassroomWidget onClick={() => setActiveWidget("Google Classroom")}/>
-          <CalendarWidget onClick={() => setActiveWidget("Google Calendar")} />
-          <GmailWidget onClick={() => setActiveWidget("Gmail")} /> 
+          <ClassroomWidget onClick={() => navigate("/classroom")}/>
+          <CalendarWidget onClick={() => navigate("/calendar")} />
+          <GmailWidget onClick={() => navigate("/gmail")} /> 
         </div>
         <div className="bottomwidgetcontainer">
-            <TimerWidget onClick={() => setActiveWidget("Timer")} />
-            <ToDoWidget onClick={() => setActiveWidget("To-Do List")}/> 
-            <ProjectsWidget onClick={() => setActiveWidget("Projects")}/> 
+            <TimerWidget onClick={() => navigate("/timer")} />
+            <ToDoWidget onClick={() => navigate("/todo")}/> 
+            <ProjectsWidget onClick={() => navigate("/projects")}/> 
         </div>
       </div>
-    ): (
-      renderWidgetPage()
-    )}
-      </Router>
     </>
   );
 };

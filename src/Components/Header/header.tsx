@@ -1,17 +1,22 @@
 import { FC } from "react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 type headerprop = {
   headerTitle: string;
+  onClick: () => void;
 };
 
 type searchbarprop = {
   placeholder: string;
 };
+type onclickprop = {
+  onClick: () => void;
+}
 const Title: FC<headerprop> = (props) => {
   return (
     <>
-      <h1 className="headertitle"> {props.headerTitle} </h1>
+      <h1 className="headertitle" onClick={props.onClick}> {props.headerTitle} </h1>
     </>
   );
 };
@@ -36,17 +41,18 @@ const HamburgerMenu: FC = () => {
 const SearchBar: FC<searchbarprop> = (prop) => {
   return <input className="searchbar" placeholder={prop.placeholder} />;
 };
-const HomeIcon: FC = () => {
-  return <img className="homeicon" src="src\assets\HomeIcon.png" alt="hello" />;
+const HomeIcon: FC<onclickprop> = (prop) => {
+  return <img className="homeicon" src="src\assets\HomeIcon.png" alt="hello" onClick={prop.onClick}/>;
 };
 
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <div className="headercontainer">
       <li className="headerelementscontainer">
         <HamburgerMenu />
-        <HomeIcon />
-        <Title headerTitle="StudentFlow Hub" />
+        <HomeIcon onClick={() => navigate('/dashboard')}/>
+        <Title onClick={ () => navigate('/dashboard')} headerTitle="StudentFlow Hub" />
         <SearchBar placeholder="Search Here" />
       </li>
     </div>
