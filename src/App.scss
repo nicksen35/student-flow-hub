@@ -6,6 +6,8 @@ $calendar-blue: #1967d2;
 $gmail-orange: #fbbc05;
 $top-widget-height: 40vh;
 $onepx-solid: 1px solid black;
+$gmail-blue:#3e65cf;
+$gmail-red: #c71610;
 
 * {
   font-family: $font;
@@ -79,6 +81,10 @@ $onepx-solid: 1px solid black;
   text-align: center;
   width: 50%;
   margin: auto;
+}
+.headertitle:hover, .homeicon:hover
+{
+  cursor:pointer
 }
 .homeicon {
   width: 60px;
@@ -203,7 +209,7 @@ h1 {
 .dropdown-contentclassroom {
   display: none;
   position: absolute;
-  background-color: #f1f1f1;
+  background-color: white;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
@@ -220,6 +226,7 @@ h1 {
 /* Change color of dropdown links on hover */
 .dropdown-contentclassroom a:hover {
   background-color: black;
+  color:white
 }
 
 /* Show the dropdown menu on hover */
@@ -239,14 +246,14 @@ h1 {
   align-items: center;
 }
 .widgetname {
-  text-indent: 5%;
+  text-indent: 7%;
   text-align: left;
   border: 0;
   background-color: transparent;
   font-size: 25px;
   font-weight: bold;
   color: white;
-  margin-right:5%;
+  margin-right:8%;
 }
 .classroomboxcontainer {
   display: flex;
@@ -297,6 +304,115 @@ h1 {
   width: 51vh;
 }
 
+
+.classroomsubtitle
+{
+  display:flex;
+}
+
+.widget-link
+{
+  margin:0;
+  text-decoration: none;
+  color:#000;
+  padding:0;
+}
+.gmaildropdownbtn {
+  background-color: #04aa6d;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.gmaildropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-contentgmail {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-contentgmail a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-contentgmail a:hover {
+  background-color: black;
+  color:white
+}
+
+/* Show the dropdown menu on hover */
+.gmaildropdown:hover .dropdown-contentgmail {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.gmaildropdown:hover .dropbtn {
+  background-color: #3e8e41;
+}
+
+.gmailwidgetborder {
+  border-bottom: $onepx-solid;
+  height: 15%;
+  display: flex;
+  align-items: center;
+}
+.widgetname {
+  text-indent: 7%;
+  text-align: left;
+  border: 0;
+  background-color: transparent;
+  font-size: 25px;
+  font-weight: bold;
+  color: white;
+  margin-right:8%;
+}
+.gmailboxcontainer {
+  display: flex;
+  column-gap: 1%;
+  justify-content: center;
+  margin-top: 2%;
+  height: 70vh;
+  font-size: 15px;
+}
+
+.widgetcontainer1 .gmailwidgetborder {
+  background-color: $gmail-red;
+}
+.widgetcontainer2 .gmailwidgetborder {
+  background-color: $gmail-blue;
+}
+.widgetcontainer3 .gmailwidgetborder {
+  background-color: $gmail-orange;
+}
+.widgetcontainer1 .gmaildropdownbtn,
+.widgetcontainer1 .dropdown-contentgmail {
+  width: 61.25vh;
+}
+
+.widgetcontainer2 .classroomdropdownbtn,
+.widgetcontainer2 .dropdown-contentclassroom {
+  width: 74.8vh;
+}
+.widgetcontainer3 .classroomdropdownbtn,
+.widgetcontainer3 .dropdown-contentclassroom {
+  width: 51vh;
+}
+
 .down {
   border: solid white;
   border-width: 0 3px 3px 0;
@@ -306,7 +422,7 @@ h1 {
   -webkit-transform: rotate(45deg);
   margin:0;
 }
-.classroomsubtitle
+.gmailsubtitle
 {
   display:flex;
 }

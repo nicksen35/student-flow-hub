@@ -1,6 +1,5 @@
 
-import {useState} from 'react'
-import { BrowserRouter as Router, Route, Switch, Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FC } from "react";
 import WidgetTitle from "../Widgets/widgettitle";
 
