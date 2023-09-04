@@ -21,7 +21,7 @@ function App() {
         <Route path="calendar" element={<CalendarWidgetPage />} />
         <Route path="todo" element ={<ToDoWidgetPage />} />
         <Route path="projects" element={<ProjectsWidgetPage />} />
-        <Route path="timer" element= {<TimerWidgetPage />} />
+        <Route path="timer/:page" element= {<TimerWidgetPage />} />
       </Routes>
     </>
   );

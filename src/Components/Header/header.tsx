@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import homeImage from '../../assets/HomeIcon.png'
 
 type headerprop = {
   headerTitle: string;
@@ -42,7 +43,7 @@ const SearchBar: FC<searchbarprop> = (prop) => {
   return <input className="searchbar" placeholder={prop.placeholder} />;
 };
 const HomeIcon: FC<onclickprop> = (prop) => {
-  return <img className="homeicon" src="src\assets\HomeIcon.png" alt="hello" onClick={prop.onClick}/>;
+  return <img className="homeicon" src={homeImage} alt="hello" onClick={prop.onClick}/>;
 };
 
 const Header = () => {

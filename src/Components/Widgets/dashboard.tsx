@@ -2,6 +2,13 @@
 import { useNavigate } from 'react-router-dom';
 import { FC } from "react";
 import WidgetTitle from "../Widgets/widgettitle";
+import calendarImage from '../../assets/Calendar.png'
+import gmailImage from '../../assets/GmailLogo.png'
+import classroomImage from '../../assets/Google_Classroom_Logo.png'
+import projectsImage from '../../assets/Projects.png'
+import todoImage from '../../assets/ToDoList.png'
+import timerImage from '../../assets/Timer.png'
+
 
 interface WidgetProp {
     onClick: () => void;
@@ -11,7 +18,7 @@ interface WidgetProp {
       <>
         <div className="calendarwidget" onClick={prop.onClick}>
           <div className="calendarwidgetheader">
-            <WidgetTitle widgettitle="Google Calendar" imageSource="src\assets\Calendar.png"/>
+            <WidgetTitle widgettitle="Google Calendar" imageSource={calendarImage}/>
           </div>
         </div>
       </>
@@ -23,7 +30,7 @@ interface WidgetProp {
       <>
         <div className="gmailwidget" onClick={prop.onClick}>
           <div className="gmailwidgetheader">
-            <WidgetTitle widgettitle="Gmail" imageSource="src\assets\GmailLogo.png"/>
+            <WidgetTitle widgettitle="Gmail" imageSource={gmailImage}/>
           </div>
         </div>
       </>
@@ -34,7 +41,7 @@ interface WidgetProp {
       <>
         <div className="classroomwidget" onClick={prop.onClick}>
           <div className="classroomwidgetheader">
-            <WidgetTitle widgettitle="Google Classroom" imageSource="src\assets\Google_Classroom_Logo.png"/>
+            <WidgetTitle widgettitle="Google Classroom" imageSource={classroomImage}/>
           </div>
         </div>
       </>
@@ -46,7 +53,7 @@ interface WidgetProp {
       <>
         <div className="projectswidget" onClick={prop.onClick}>
           <div className="projectswidgetheader">
-            <WidgetTitle widgettitle="Projects" imageSource="src\assets\Projects.png"/>
+            <WidgetTitle widgettitle="Projects" imageSource={projectsImage}/>
           </div>
         </div>
       </>
@@ -58,7 +65,7 @@ interface WidgetProp {
       <>
         <div className="todowidget" onClick={prop.onClick}>
           <div className="todowidgetheader">
-            <WidgetTitle widgettitle="To-Do List" imageSource="src\assets\ToDoList.png"/>
+            <WidgetTitle widgettitle="To-Do List" imageSource={todoImage}/>
           </div>
         </div>
       </>
@@ -69,7 +76,7 @@ interface WidgetProp {
       <>
         <div className="timerwidget" onClick={prop.onClick}>
           <div className="timerwidgetheader">
-            <WidgetTitle widgettitle="Timer" imageSource="src\assets\Timer.png"/>
+            <WidgetTitle widgettitle="Timer" imageSource={timerImage}/>
           </div>
         </div>
       </>
@@ -91,7 +98,7 @@ const Dashboard = () => {
           <GmailWidget onClick={() => navigate("/gmail")} /> 
         </div>
         <div className="bottomwidgetcontainer">
-            <TimerWidget onClick={() => navigate("/timer")} />
+            <TimerWidget onClick={() => navigate("/timer/Timer")} />
             <ToDoWidget onClick={() => navigate("/todo")}/> 
             <ProjectsWidget onClick={() => navigate("/projects")}/> 
         </div>
