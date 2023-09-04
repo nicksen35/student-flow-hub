@@ -9,6 +9,7 @@ import ProjectsWidgetPage from "./Components/Widgets/WidgetOptions/projectswidge
 import TimerWidgetPage from "./Components/Widgets/WidgetOptions/timerwidget";
 import CalendarWidgetPage from "./Components/Widgets/WidgetOptions/calendarwidget";
 
+
 function App() {
   return (
     <>

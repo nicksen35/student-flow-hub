@@ -439,9 +439,6 @@ h1 {
   border:$onepx-solid;
   width:20%;
   height:84vh;
-  position:absolute;
-  top:13%;
-  left:0;
   background-color: white;
 }
 .timersidebaritems
@@ -458,7 +455,7 @@ h1 {
   font-size:large;
 
 }
-.timersidebaritems:active
+.timersidebaritems.active
 {
   color:black;
   font-size:larger;
@@ -485,4 +482,8 @@ h1 {
   margin:0;
   margin-right:30%;
   margin-left:5%;
+}
+.timerwidgetcontainer
+{
+  display:flex;
 }
