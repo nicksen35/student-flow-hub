@@ -100,7 +100,7 @@ const Dashboard = () => {
         <div className="bottomwidgetcontainer">
             <TimerWidget onClick={() => navigate("/timer/Timer")} />
             <ToDoWidget onClick={() => navigate("/todo/Home")}/> 
-            <ProjectsWidget onClick={() => navigate("/projects")}/> 
+            <ProjectsWidget onClick={() => navigate("/projects/Home")}/> 
         </div>
       </div>
     </>

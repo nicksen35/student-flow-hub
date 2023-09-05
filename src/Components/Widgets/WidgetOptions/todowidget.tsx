@@ -79,7 +79,7 @@ const ToDoWidgetPage: FC = () => {
               sbtext="Home"
               imgsrc={homeImage}
               onClick={() => navigate("/todo/Home")}
-              active={widgettitle === "Inbox"} 
+              active={widgettitle === "Home"} 
             />
             <ToDoSideBar
               sbtext="Today"
