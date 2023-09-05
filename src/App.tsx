@@ -20,9 +20,9 @@ function App() {
         <Route path="classroom" element={<ClassroomWidgetPage />} />
         <Route path="gmail" element={<GmailWidgetPage />} />
         <Route path="calendar" element={<CalendarWidgetPage />} />
-        <Route path="todo" element ={<ToDoWidgetPage />} />
         <Route path="projects" element={<ProjectsWidgetPage />} />
         <Route path="timer/:page" element= {<TimerWidgetPage />} />
+        <Route path="todo/:page" element={<ToDoWidgetPage />} />
       </Routes>
     </>
   );

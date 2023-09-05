@@ -13,12 +13,7 @@ interface SideBarProp {
   onClick: () => void;
   active: boolean;
 }
-interface TimerTitleProp {
-  headertext: string;
-}
-const TimerBar: FC<TimerTitleProp> = (props) => {
-  return <h1> {props.headertext} </h1>;
-};
+
 
 const TimerSideBarTitle: FC = (props) => {
   return <h1 className="timersidebarheader"> Timer </h1>;
@@ -42,13 +37,6 @@ const TimerSideBar: FC<SideBarProp> = (props) => {
   );
 };
 
-const TimerPage: FC = () => {
-  return (
-    <div className="timerpage">
-      <h1> Hello </h1>
-    </div>
-  );
-};
 const TimerWidgetPage: FC = () => {
   const navigate = useNavigate();
   const { page } = useParams();
@@ -59,7 +47,7 @@ const TimerWidgetPage: FC = () => {
     case "Timer":
       twidgetimage = timerImage;
       WidgetSubPage = (
-        <div className="timerpagewidget">
+        <>
           <h1 className="timertitle"> Set Your Timer </h1>
         <h1 className="timer">30:00</h1>
         <ul className="timerpagelist">
@@ -70,7 +58,8 @@ const TimerWidgetPage: FC = () => {
             <button className="timerbutton">End</button>
           </li>
         </ul>
-      </div>
+        </>
+
       
       );
       break;
@@ -124,7 +113,9 @@ const TimerWidgetPage: FC = () => {
             />
           </ul>
         </div>
-        {WidgetSubPage}
+        <div className="subpagewidget">
+          {WidgetSubPage}
+        </div>
       </div>
     </>
   );
