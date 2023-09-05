@@ -1,10 +1,7 @@
 import { FC } from "react";
 import SPWidgetTitle from "../subpagewidgettitle";
 import { useNavigate, Routes, Route } from "react-router-dom";
-import homeImage from '../../../assets/ToDoList.png'
-import todayImage from '../../../assets/CalendarIcon.png'
-import upcomingImage from '../../../assets/UpcomingIcon.png'
-import starredImage from '../../../assets/StarredIcon.png'
+import homeImage from '../../../assets/Projects.png'
 import { useParams } from "react-router-dom";
 
 interface SideBarProp {
