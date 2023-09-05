@@ -1,10 +1,10 @@
 import { FC } from "react";
 import SPWidgetTitle from "../subpagewidgettitle";
 import { useNavigate, Routes, Route } from "react-router-dom";
-import timerImage from '../../../assets/Timer.png'
-import statsImage from '../../../assets/Stats.png';
-import spotifyImage from '../../../assets/Spotify.png';
-import settingsImage from '../../../assets/Settings.png';
+import timerImage from "../../../assets/Timer.png";
+import statsImage from "../../../assets/Stats.png";
+import spotifyImage from "../../../assets/Spotify.png";
+import settingsImage from "../../../assets/Settings.png";
 import { useParams } from "react-router-dom";
 
 interface SideBarProp {
@@ -14,7 +14,7 @@ interface SideBarProp {
   active: boolean;
 }
 interface TimerTitleProp {
-    headertext: string;
+  headertext: string;
 }
 const TimerBar: FC<TimerTitleProp> = (props) => {
   return <h1> {props.headertext} </h1>;
@@ -26,7 +26,10 @@ const TimerSideBarTitle: FC = (props) => {
 const TimerSideBar: FC<SideBarProp> = (props) => {
   return (
     <>
-      <li className={"timersidebaritems" + (props.active ? " active" : "")} onClick={props.onClick}>
+      <li
+        className={"timersidebaritems" + (props.active ? " active" : "")}
+        onClick={props.onClick}
+      >
         {" "}
         <img
           className="sidebarimg"
@@ -39,75 +42,90 @@ const TimerSideBar: FC<SideBarProp> = (props) => {
   );
 };
 
-const TimerPage:FC = () =>
-{
-  return(
+const TimerPage: FC = () => {
+  return (
     <div className="timerpage">
       <h1> Hello </h1>
     </div>
-  )
-}
+  );
+};
 const TimerWidgetPage: FC = () => {
   const navigate = useNavigate();
-  const {page} = useParams();
-  const widgettitle = page || 'Default Widget Title';
-  let twidgetimage:string;
-  let WidgetSubPage:JSX.Element | null = null;
-  switch(widgettitle){
-    case 'Timer':
-        twidgetimage = timerImage;
-        WidgetSubPage = (
-          <h1> Hello from TimerPage </h1>
-        )
-        break;
-    case 'Stats':
-        twidgetimage = statsImage;
-        break;
-    case 'Spotify':
-        twidgetimage = spotifyImage;
-        break;
-    case 'Settings':
-        twidgetimage = settingsImage;
-        break;
+  const { page } = useParams();
+  const widgettitle = page || "Default Widget Title";
+  let twidgetimage: string;
+  let WidgetSubPage: JSX.Element | null = null;
+  switch (widgettitle) {
+    case "Timer":
+      twidgetimage = timerImage;
+      WidgetSubPage = (
+        <div className="timerpagewidget">
+          <h1 className="timertitle"> Set Your Timer </h1>
+        <h1 className="timer">30:00</h1>
+        <ul className="timerpagelist">
+          <li className="timerbuttons">
+            <button className="timerbutton">Start</button>
+          </li>
+          <li className="timerbuttons">
+            <button className="timerbutton">End</button>
+          </li>
+        </ul>
+      </div>
+      
+      );
+      break;
+    case "Stats":
+      twidgetimage = statsImage;
+      WidgetSubPage = <h1> Hello From the Stats Page</h1>;
+      break;
+    case "Spotify":
+      twidgetimage = spotifyImage;
+      WidgetSubPage = <h1> Hello From the Spotify Page</h1>;
+      break;
+    case "Settings":
+      twidgetimage = settingsImage;
+      WidgetSubPage = <h1> Hello From the Settings Page</h1>;
+      break;
     default:
-        twidgetimage = timerImage;
+      twidgetimage = timerImage;
   }
   return (
     <>
+    <div className="timerwidgettitle">
       <SPWidgetTitle widgettitle={widgettitle} imageSource={twidgetimage} />
-      <div className="timerwidgetcontainer">
-      <div className="timersidebar">
-        <TimerSideBarTitle />
-        <ul>
-          <TimerSideBar
-            sbtext="Timer"
-            imgsrc={timerImage}
-            onClick={() => navigate("/timer/Timer")}
-            active={widgettitle === 'Timer'} // Set active based on the current widget
-          />
-          <TimerSideBar
-            sbtext="Stats"
-            imgsrc={statsImage}
-            onClick={() => navigate("/timer/Stats")}
-            active={widgettitle === 'Stats'} // Set active based on the current widget
-          />
-          <TimerSideBar
-            sbtext="Spotify"
-            imgsrc={spotifyImage}
-            onClick={() => navigate("/timer/Spotify")}
-            active={widgettitle === 'Spotify'} // Set active based on the current widget
-          />
-          <TimerSideBar
-            sbtext="Settings"
-            imgsrc={settingsImage}
-            onClick={() => navigate("/timer/Settings")}
-            active={widgettitle === 'Settings'} // Set active based on the current widget
-          />
-        </ul>
       </div>
-      {WidgetSubPage}
-      </div> 
-      
+      <div className="timerwidgetcontainer">
+        <div className="timersidebar">
+          <TimerSideBarTitle />
+          <ul>
+            <TimerSideBar
+              sbtext="Timer"
+              imgsrc={timerImage}
+              onClick={() => navigate("/timer/Timer")}
+              active={widgettitle === "Timer"} // Set active based on the current widget
+            />
+            <TimerSideBar
+              sbtext="Stats"
+              imgsrc={statsImage}
+              onClick={() => navigate("/timer/Stats")}
+              active={widgettitle === "Stats"} // Set active based on the current widget
+            />
+            <TimerSideBar
+              sbtext="Spotify"
+              imgsrc={spotifyImage}
+              onClick={() => navigate("/timer/Spotify")}
+              active={widgettitle === "Spotify"} // Set active based on the current widget
+            />
+            <TimerSideBar
+              sbtext="Settings"
+              imgsrc={settingsImage}
+              onClick={() => navigate("/timer/Settings")}
+              active={widgettitle === "Settings"} // Set active based on the current widget
+            />
+          </ul>
+        </div>
+        {WidgetSubPage}
+      </div>
     </>
   );
 };
