@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import { FC } from "react";
 import WidgetTitle from "../Widgets/widgettitle";
 import calendarImage from "../../assets/Calendar.png";
@@ -8,7 +7,6 @@ import classroomImage from "../../assets/Google_Classroom_Logo.png";
 import projectsImage from "../../assets/Projects.png";
 import todoImage from "../../assets/ToDoList.png";
 import timerImage from "../../assets/Timer.png";
-import axios from "axios";
 
 interface WidgetProp {
   onClick: () => void;
@@ -29,19 +27,6 @@ const CalendarWidget: FC<WidgetProp> = (prop) => {
 };
 
 const GmailWidget: FC<WidgetProp> = (prop) => {
-  const [data, setData] = useState(null); // Replace 'any' with the expected data type
-
-  useEffect(() => {
-    // Make an API request when the component mounts
-    axios
-      .get("https://www.googleapis.com/auth/gmail.readonly")
-      .then((response:any) => {
-        setData(response.data);
-      })
-      .catch((error:any) => {
-        console.error("API request failed:", error);
-      });
-  }, []);
   return (
     <>
       <div className="gmailwidget" onClick={prop.onClick}>
