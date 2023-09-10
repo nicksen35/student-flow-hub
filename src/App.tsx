@@ -10,45 +10,65 @@ import ProjectsWidgetPage from "./Components/Widgets/WidgetOptions/projectswidge
 import TimerWidgetPage from "./Components/Widgets/WidgetOptions/timerwidget";
 import CalendarWidgetPage from "./Components/Widgets/WidgetOptions/calendarwidget";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function App() {
+interface User {
+  access_token: string;
+  // Add other properties you expect in the user object here
+}
 
-  const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+interface UserProfile {
+  // Define the profile properties you expect here
+  id: string;
+  email: string;
+  // Add other properties you expect in the profile here
+}
+
+function App() {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  const login = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse),
+    onError: (error) => console.log("Login Failed:", error),
+  });
 
   useEffect(() => {
-    axios.get('http://localhost:5000/oauthcallback')
-      .then((response) => {
-        console.log(response)
-        if (response.data.loggedIn) {
-          setIsLoggedIn(true);
-        }
-      })
-      .catch((error) => {
-        console.error('Error checking login status:', error);
-      });
-  }, []);
+    if (user) {
+      axios
+        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+          headers: {
+            Authorization: `Bearer ${user.access_token}`,
+            Accept: "application/json",
+          },
+        })
+        .then((res: any) => {
+          setProfile(res.data);
+          console.log(res.data)
+          console.log(user.access_token)
+          axios.post("http://localhost:3000/api/save-token", { accessToken: user.access_token })
+            .then((response) => {
+              console.log(response)
+              console.log(response.data);
+            })
+            .catch((error) => {
+              console.error('Failed to send access token to server:', error);
+            });
+        })
+        .catch((err: any) => console.log(err));
+    }
+  }, [user]);
 
-  const handleLogin = () => {
-    window.location.href = '/auth/google'; 
-  };
 
-  const handleLogout = () => {
-    axios.get('/logout') 
-      .then(() => {
-        setIsLoggedIn(false);
-      })
-      .catch((error) => {
-        console.error('Error logging out:', error);
-      });
+  const logOut = () => {
+    googleLogout(); 
+    setProfile(null);
   };
 
   return (
     <>
-     {isLoggedIn ? (
-      <>
+      {profile ? (
+        <>
           <Header />
           <Routes>
             <Route
@@ -63,12 +83,12 @@ function App() {
             <Route path="timer/:page" element={<TimerWidgetPage />} />
             <Route path="todo/:page" element={<ToDoWidgetPage />} />
           </Routes>
-          </>
-     ):(
-      <button onClick={handleLogin} > Login With Google </button>
-     )}
+        </>
+      ) : (
+        <button onClick={() => login()}>Sign in with Google 🚀 </button>
+      )}
     </>
   );
 }
-
 export default App;
+
