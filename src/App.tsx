@@ -11,7 +11,9 @@ import TimerWidgetPage from "./Components/Widgets/WidgetOptions/timerwidget";
 import CalendarWidgetPage from "./Components/Widgets/WidgetOptions/calendarwidget";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import jwt from 'jsonwebtoken'
 
+const apiKey = 'AIzaSyC2QO4kqGcdzqkmCZHNzcjCwFbB2sqi210' 
 interface User {
   access_token: string;
   // Add other properties you expect in the user object here
@@ -36,32 +38,51 @@ function App() {
   useEffect(() => {
     if (user) {
       axios
-        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
-          headers: {
-            Authorization: `Bearer ${user.access_token}`,
-            Accept: "application/json",
-          },
-        })
+        .get(
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.access_token}`,
+              Accept: "application/json",
+            },
+          }
+        )
         .then((res: any) => {
           setProfile(res.data);
-          console.log(res.data)
-          console.log(user.access_token)
-          axios.post("http://localhost:3000/api/save-token", { accessToken: user.access_token })
+          console.log(res.data);
+          console.log(user.access_token);
+          axios
+            .post("http://localhost:3000/api/save-token", {
+              accessToken: user.access_token,
+            })
             .then((response) => {
-              console.log(response)
+              console.log(response);
               console.log(response.data);
             })
             .catch((error) => {
-              console.error('Failed to send access token to server:', error);
+              console.error("Failed to send access token to server:", error);
+            });
+
+          axios
+            .get("https://classroom.googleapis.com/v1/courses", {
+              method: 'GET',
+              headers: {
+                Authorization: `Bearer ${(user.access_token)}`,
+              },
+            })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.error(error);
             });
         })
         .catch((err: any) => console.log(err));
     }
   }, [user]);
 
-
   const logOut = () => {
-    googleLogout(); 
+    googleLogout();
     setProfile(null);
   };
 
@@ -91,4 +112,3 @@ function App() {
   );
 }
 export default App;
-
