@@ -11,9 +11,23 @@ import TimerWidgetPage from "./Components/Widgets/WidgetOptions/timerwidget";
 import CalendarWidgetPage from "./Components/Widgets/WidgetOptions/calendarwidget";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import jwt from 'jsonwebtoken'
+import { gapi } from "gapi-script";
 
-const apiKey = 'AIzaSyC2QO4kqGcdzqkmCZHNzcjCwFbB2sqi210' 
+const apiKey = "AIzaSyC2QO4kqGcdzqkmCZHNzcjCwFbB2sqi210";
+const clientID =
+  "389992701916-753vivjpdsjn0fk6r292gdhjldei82s7.apps.googleusercontent.com";
+const scopes = [
+  "https://www.googleapis.com/auth/classroom.courses",
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/calendar.readonly",
+  // Add more scopes as needed
+];
+const scope = scopes.join(" "); // Combine the scopes into a single string
+const discoverydocs = ["https://classroom.googleapis.com/$discovery/rest?version=v1",
+"https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest",
+"https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+]
+
 interface User {
   access_token: string;
   // Add other properties you expect in the user object here
@@ -26,89 +40,73 @@ interface UserProfile {
   // Add other properties you expect in the profile here
 }
 
-function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
 
-  const login = useGoogleLogin({
-    onSuccess: (codeResponse) => setUser(codeResponse),
-    onError: (error) => console.log("Login Failed:", error),
-  });
-
-  useEffect(() => {
-    if (user) {
-      axios
-        .get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.access_token}`,
-              Accept: "application/json",
-            },
-          }
-        )
-        .then((res: any) => {
-          setProfile(res.data);
-          console.log(res.data);
-          console.log(user.access_token);
-          axios
-            .post("http://localhost:3000/api/save-token", {
-              accessToken: user.access_token,
+  function App() {
+    const [user, setUser] = useState<User | null>(null);
+    const [profile, setProfile] = useState<UserProfile | null>(null);
+    function initClient() {
+      gapi.load("client:auth2", function () {
+        gapi.client
+          .init({
+            apiKey: apiKey,
+            clientId: clientID,
+            discoveryDocs: discoverydocs,
+            scope: scope,
+          })
+          .then(function () {
+            gapi.auth2.getAuthInstance().signIn().then(() => {
+              // After sign-in, get the access token
+              const accessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
+              const user = gapi.auth2.getAuthInstance().currentUser.get();
+              setUser(user)
+              console.log("Access token:", accessToken);
             })
-            .then((response) => {
-              console.log(response);
-              console.log(response.data);
-            })
-            .catch((error) => {
-              console.error("Failed to send access token to server:", error);
-            });
-
-          axios
-            .get("https://classroom.googleapis.com/v1/courses", {
-              method: 'GET',
-              headers: {
-                Authorization: `Bearer ${(user.access_token)}`,
-              },
-            })
-            .then((response) => {
-              console.log(response);
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        })
-        .catch((err: any) => console.log(err));
+          })
+          .catch(function (error) {
+            console.error("Error initializing Google API client:", error);
+          });
+      });
+      
     }
-  }, [user]);
 
-  const logOut = () => {
-    googleLogout();
-    setProfile(null);
-  };
+    useEffect(() => {
+      if (user) {
+        gapi.client.classroom.courses.list().then(function(response) {
+          console.log(response.result);
+        }).catch(function(error) {
+          console.error("Error making Classroom API request:", error);
+        });
+      }
+    }, [user]);
 
-  return (
-    <>
-      {profile ? (
-        <>
-          <Header />
-          <Routes>
-            <Route
-              path="/"
-              element={<Navigate to="dashboard" replace={true} />}
-            />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="classroom" element={<ClassroomWidgetPage />} />
-            <Route path="gmail" element={<GmailWidgetPage />} />
-            <Route path="calendar" element={<CalendarWidgetPage />} />
-            <Route path="projects/:page" element={<ProjectsWidgetPage />} />
-            <Route path="timer/:page" element={<TimerWidgetPage />} />
-            <Route path="todo/:page" element={<ToDoWidgetPage />} />
-          </Routes>
-        </>
-      ) : (
-        <button onClick={() => login()}>Sign in with Google 🚀 </button>
-      )}
-    </>
-  );
-}
-export default App;
+    const logOut = () => {
+      googleLogout();
+      setProfile(null);
+    };
+
+    return (
+      <>
+        {user ? (
+          <>
+            <Header />
+            <Routes>
+              <Route
+                path="/"
+                element={<Navigate to="dashboard" replace={true} />}
+              />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="classroom" element={<ClassroomWidgetPage />} />
+              <Route path="gmail" element={<GmailWidgetPage />} />
+              <Route path="calendar" element={<CalendarWidgetPage />} />
+              <Route path="projects/:page" element={<ProjectsWidgetPage />} />
+              <Route path="timer/:page" element={<TimerWidgetPage />} />
+              <Route path="todo/:page" element={<ToDoWidgetPage />} />
+            </Routes>
+          </>
+        ) : (
+          <button onClick={() => initClient()}>Sign in with Google 🚀 </button>
+        )}
+      </>
+    );
+  }
+  export default App;
