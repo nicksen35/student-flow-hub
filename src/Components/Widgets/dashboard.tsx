@@ -27,6 +27,7 @@ const CalendarWidget: FC<WidgetProp> = (prop) => {
 };
 
 const GmailWidget: FC<WidgetProp> = (prop) => {
+  
   return (
     <>
       <div className="gmailwidget" onClick={prop.onClick}>

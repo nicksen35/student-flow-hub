@@ -13,6 +13,9 @@
     "@react-oauth/google": "^0.11.1",
     "@types/gapi": "^0.0.44",
     "@types/gapi.auth2": "^0.0.57",
+    "@types/gapi.client.classroom": "^1.0.15",
+    "@types/gapi.client.classroom-v1": "^0.0.1",
+    "@types/gapi.client.gmail": "^1.0.5",
     "axios": "^1.5.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -28,6 +31,7 @@
     "react-router-dom": "^6.15.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.14",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.6.0",
