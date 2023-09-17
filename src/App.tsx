@@ -9,8 +9,9 @@ import ToDoWidgetPage from "./Components/Widgets/WidgetOptions/todowidget";
 import ProjectsWidgetPage from "./Components/Widgets/WidgetOptions/projectswidget";
 import TimerWidgetPage from "./Components/Widgets/WidgetOptions/timerwidget";
 import CalendarWidgetPage from "./Components/Widgets/WidgetOptions/calendarwidget";
-import { googleLogout, useGoogleLogin } from "@react-oauth/google";
+import { googleLogout } from "@react-oauth/google";
 import { gapi } from "gapi-script";
+import axios from "axios";
 
 const scopes = [
   "https://www.googleapis.com/auth/classroom.courses",
@@ -39,6 +40,7 @@ interface UserProfile {
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
+  const [isSignedIn, setSignedIn] = useState<boolean>(false)
   const [profile, setProfile] = useState<UserProfile | null>(null);
   function initClient() {
     gapi.load("client:auth2", function () {
@@ -60,14 +62,38 @@ function App() {
                 .currentUser.get()
                 .getAuthResponse().access_token;
               const user = gapi.auth2.getAuthInstance().currentUser.get();
+              setSignedIn(gapi.auth2.getAuthInstance().currentUser.get().isSignedIn());
               setUser(user);
+              gapi.auth2.getAuthInstance().currentUser.get().grantOfflineAccess().then((response) => {
+                const authCode = response.code;
+                // Now you have the authorization code (authCode)
+                console.log('Authorization Code:', authCode);
+                if (user) {
+                  axios
+                    .post('http://localhost:3000/exchange-tokens', {
+                      code: authCode,
+                    })
+                    .then((response) => {
+                      const refresh_token = response.data.refresh_token
+                      console.log(refresh_token);
+                    })
+                    .catch((error) => {
+                      console.error(error);
+                    });
+                }
+              })
+              
+            })
+            .catch(function (error) {
+              console.error("Error initializing Google API client:", error);
             });
-        })
-        .catch(function (error) {
-          console.error("Error initializing Google API client:", error);
+
+              
+            
         });
     });
   }
+  
   function classroomAPICall() {
     gapi.client.classroom.courses
       .list()
@@ -102,7 +128,7 @@ function App() {
 
   return (
     <>
-      {user ? (
+      {isSignedIn ? (
         <>
           <Header />
           <Routes>
