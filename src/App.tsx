@@ -40,6 +40,7 @@ interface UserProfile {
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
+  const [refreshtoken, setRefreshToken] = useState<string>("");
   const [isSignedIn, setSignedIn] = useState<boolean>(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   function initClient() {
@@ -75,6 +76,7 @@ function App() {
                   })
                   .then((response) => {
                     const refresh_token = response.data.refresh_token;
+                    setRefreshToken(refresh_token);
                     console.log(refresh_token);
                   })
                   .catch((error) => {
@@ -86,6 +88,19 @@ function App() {
     });
   }
 
+  function ReloadAccessToken() {
+    axios
+      .post("http://localhost:3000/refresh-token-exchange", {
+        refreshtoken: refreshtoken, // Use the same variable name
+      })
+      .then((response) => {
+        const accesstoken = response.data.access_token;
+        console.log(accesstoken);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
   function classroomAPICall() {
     gapi.client.classroom.courses
       .list()
@@ -122,6 +137,7 @@ function App() {
     <>
       {isSignedIn ? (
         <>
+        <button onClick={() => ReloadAccessToken()}> Hello </button>
           <Header />
           <Routes>
             <Route
@@ -139,31 +155,31 @@ function App() {
         </>
       ) : (
         <>
-        <div className="signinpagecontainer">
-          <div className="signinpage">
-            <h1 id="signintitle" className="signintitle">
-              {" "}
-              Welcome To StudentFlow Hub!{" "}
-            </h1>
-            <h2 id="signinsubtitle" className="signintitle">
-              {" "}
-              Get Started By Signing In!{" "}
-            </h2>
-            <div className="googlebuttoncontainer">
-              <div onClick={() => initClient()} className="google-btn">
-                <div className="google-icon-wrapper">
-                  <img
-                    className="google-icon"
-                    src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
-                  />
+          <div className="signinpagecontainer">
+            <div className="signinpage">
+              <h1 id="signintitle" className="signintitle">
+                {" "}
+                Welcome To StudentFlow Hub!{" "}
+              </h1>
+              <h2 id="signinsubtitle" className="signintitle">
+                {" "}
+                Get Started By Signing In!{" "}
+              </h2>
+              <div className="googlebuttoncontainer">
+                <div onClick={() => initClient()} className="google-btn">
+                  <div className="google-icon-wrapper">
+                    <img
+                      className="google-icon"
+                      src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                    />
+                  </div>
+                  <p className="btn-text">
+                    <b>Sign In With Google</b>
+                  </p>
                 </div>
-                <p className="btn-text">
-                  <b>Sign In With Google</b>
-                </p>
               </div>
             </div>
           </div>
-        </div>
         </>
       )}
     </>
