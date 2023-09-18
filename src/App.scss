@@ -10,6 +10,9 @@ $gmail-blue:#3e65cf;
 $gmail-red: #c71610;
 $calendar-yellow: #FBBC04;
 $calendar-green: #34A853;
+$white: #fff;
+$google-blue: #4285f4;
+$button-active-blue: #1669F2;
 * {
   font-family: $font;
 }
@@ -761,4 +764,107 @@ h1 {
   text-decoration: none;
   color:#000;
   padding:0;
+}
+
+.google-btn {
+  width: 184px;
+  height: 42px;
+  background-color: $google-blue;
+  border-radius: 2px;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,.25);
+  .google-icon-wrapper {
+    position: absolute;
+    margin-top: 1px;
+    margin-left: 1px;
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    background-color: $white;
+  }
+  .google-icon {
+    position: absolute;
+    margin-top: 11px;
+    margin-left: 11px;
+    width: 18px;
+    height: 18px;
+  }
+  .btn-text {
+    float: right;
+    margin: 11px 8px 0 0;
+    color: $white;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    font-family: "Roboto";
+    text-indent:5px;
+  }
+  &:hover {
+    box-shadow: 0 0 6px $google-blue;
+  }
+  &:active {
+    background: $button-active-blue;
+  }
+}
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:500);
+.googlebuttoncontainer
+{
+  flex-direction: column;
+
+}
+.signintitle
+{
+  align-items:center;
+  flex-direction: column;
+  align-items: center;
+}
+#signinsubtitle
+{
+  font-weight:lighter;
+}
+.signinpagecontainer
+{
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow:hidden;
+  
+  padding-top:2%; 
+}
+@keyframes popout {
+  from{transform:scale(0)}
+  80%{transform:scale(1.2)}
+  to{transform:scale(1)}
+}
+@-webkit-keyframes popout {
+  from{-webkit-transform:scale(0)}
+  80%{-webkit-transform:scale(1.2)}
+  to{-webkit-transform:scale(1)}
+}
+.signinpage
+{
+  animation: popout 1s ease;
+  box-shadow: 5px 5px 15px;
+  -webkit-animation: popout 1s ease;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border:$onepx-solid;
+  width:35%;
+  padding-bottom:5%;
+  height:75vh;
+  background-color: white;
+  border-radius:10px;
+}
+.signinbody
+{
+  
+  margin:0;
+  margin-top:-1%;
+  padding:0;
+  height:100%;
+  width:100%;
+  margin-left:-1%;
+
 }

@@ -40,7 +40,7 @@ interface UserProfile {
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [isSignedIn, setSignedIn] = useState<boolean>(false)
+  const [isSignedIn, setSignedIn] = useState<boolean>(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   function initClient() {
     gapi.load("client:auth2", function () {
@@ -54,46 +54,38 @@ function App() {
         .then(function () {
           gapi.auth2
             .getAuthInstance()
-            .signIn()
-            .then(() => {
-              // After sign-in, get the access token
+            .grantOfflineAccess()
+            .then((response) => {
               const accessToken = gapi.auth2
                 .getAuthInstance()
                 .currentUser.get()
                 .getAuthResponse().access_token;
               const user = gapi.auth2.getAuthInstance().currentUser.get();
-              setSignedIn(gapi.auth2.getAuthInstance().currentUser.get().isSignedIn());
+              setSignedIn(
+                gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
+              );
               setUser(user);
-              gapi.auth2.getAuthInstance().currentUser.get().grantOfflineAccess().then((response) => {
-                const authCode = response.code;
-                // Now you have the authorization code (authCode)
-                console.log('Authorization Code:', authCode);
-                if (user) {
-                  axios
-                    .post('http://localhost:3000/exchange-tokens', {
-                      code: authCode,
-                    })
-                    .then((response) => {
-                      const refresh_token = response.data.refresh_token
-                      console.log(refresh_token);
-                    })
-                    .catch((error) => {
-                      console.error(error);
-                    });
-                }
-              })
-              
-            })
-            .catch(function (error) {
-              console.error("Error initializing Google API client:", error);
+              const authCode = response.code;
+              // Now you have the authorization code (authCode)
+              console.log("Authorization Code:", authCode);
+              if (user) {
+                axios
+                  .post("http://localhost:3000/exchange-tokens", {
+                    code: authCode,
+                  })
+                  .then((response) => {
+                    const refresh_token = response.data.refresh_token;
+                    console.log(refresh_token);
+                  })
+                  .catch((error) => {
+                    console.error(error);
+                  });
+              }
             });
-
-              
-            
         });
     });
   }
-  
+
   function classroomAPICall() {
     gapi.client.classroom.courses
       .list()
@@ -146,7 +138,34 @@ function App() {
           </Routes>
         </>
       ) : (
-        <button onClick={() => initClient()}>Sign in with Google 🚀 </button>
+        <>
+        <div className="signinpagecontainer">
+          <div className="signinpage">
+            <h1 id="signintitle" className="signintitle">
+              {" "}
+              Welcome To StudentFlow Hub!{" "}
+            </h1>
+            <h2 id="signinsubtitle" className="signintitle">
+              {" "}
+              Get Started By Signing In!{" "}
+            </h2>
+            <div className="googlebuttoncontainer">
+              <div onClick={() => initClient()} className="google-btn">
+                <div className="google-icon-wrapper">
+                  <img
+                    className="google-icon"
+                    src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                  />
+                </div>
+                <p className="btn-text">
+                  <b>Sign In With Google</b>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Navigate to="/signin" replace={true} />
+        </>
       )}
     </>
   );
