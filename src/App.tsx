@@ -117,7 +117,12 @@ function App() {
   }
   function getRefreshToken() {
     axios
-      .post("http://localhost:3000/get-refresh-token", {})
+      .get("http://localhost:3000/get-refresh-token", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true
+      })
       .then((response) => {
         const refresh_token = response.data; // Use response.data directly
         console.log(refresh_token);

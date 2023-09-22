@@ -63,7 +63,7 @@ app.post("/exchange-tokens", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-app.post("/get-refresh-token", function(req, res) {
+app.get("/get-refresh-token", function(req, res) {
   console.log(req.cookies)
   const refreshTokenValue = req.cookies.refresh_token;
   console.log(refreshTokenValue)
@@ -83,14 +83,14 @@ app.get("/refresh-token-exchange", async function(req, res) {
   console.log(refreshToken);
   
   try {
-    //await res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
+    await res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
     const newAccessToken = await exchangeRefreshTokenForAccessToken(
       refreshToken
     );
     const expirySeconds = (newAccessToken.data.expires_in)
     const expiryDate = new Date(Date.now() + expirySeconds* 1000)
     console.log(expiryDate)
-    await res.cookie("access_token", newAccessToken, {httpOnly: true, secure: true, expires: expiryDate,});
+    res.cookie("access_token", newAccessToken.data.access_token, {httpOnly: true, secure: true, expires: expiryDate});
     console.log(req.cookies)
     res.json({ access_token: newAccessToken.data });
   } catch (error) {
