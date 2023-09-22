@@ -13,6 +13,7 @@ import { googleLogout } from "@react-oauth/google";
 import { gapi } from "gapi-script";
 import axios from "axios";
 
+
 const scopes = [
   "https://www.googleapis.com/auth/classroom.courses",
   "https://www.googleapis.com/auth/gmail.readonly",
@@ -87,20 +88,23 @@ function App() {
         });
     });
   }
-
   function ReloadAccessToken() {
     axios
-      .post("http://localhost:3000/refresh-token-exchange", {
-        refreshtoken: refreshtoken, // Use the same variable name
-      })
-      .then((response) => {
-        const accesstoken = response.data.access_token;
-        console.log(accesstoken);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+    .get(`http://localhost:3000/refresh-token-exchange?refreshtoken=${refreshtoken}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true, // Send cookies with the request
+    })
+    .then((response) => {
+      const accessToken = response.data.access_token;
+      console.log(accessToken);
+      // You can use the new access token as needed
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
   function classroomAPICall() {
     gapi.client.classroom.courses
       .list()
@@ -111,6 +115,17 @@ function App() {
         console.error("Error making Classroom API request:", error);
       });
   }
+  function getRefreshToken() {
+    axios
+      .post("http://localhost:3000/get-refresh-token", {})
+      .then((response) => {
+        const refresh_token = response.data; // Use response.data directly
+        console.log(refresh_token);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }  
   function gmailAPICall() {
     gapi.client.gmail.users.messages
       .get()
@@ -138,6 +153,7 @@ function App() {
       {isSignedIn ? (
         <>
         <button onClick={() => ReloadAccessToken()}> Hello </button>
+        <button onClick={() => getRefreshToken()}> Hello </button>
           <Header />
           <Routes>
             <Route
@@ -155,6 +171,7 @@ function App() {
         </>
       ) : (
         <>
+        <button onClick={() => getRefreshToken()}> Hello </button>
           <div className="signinpagecontainer">
             <div className="signinpage">
               <h1 id="signintitle" className="signintitle">

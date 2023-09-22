@@ -3,17 +3,43 @@ import axios from "axios";
 import querystring from "query-string";
 import cors from "cors";
 import dotenv from "dotenv";
-import cookieparser from 'cookie-parser'
+import cookieParser from "cookie-parser";
+
+
+const corsOptions = {
+  origin: 'http://localhost:5173', // Specify the exact origin
+  credentials: true, // Allow credentials (cookies)
+};
 
 const app = express();
 const port = 3000;
-
 dotenv.config();
-
+console.log(cookieParser)
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieparser());
+app.use(cookieParser());
+
+app.use((err, req, res, next) => {
+  if (err) {
+    console.error('Cookie parsing error:', err);
+    // Handle the error or send an error response if needed
+  }
+  next();
+});
+
+
+
+app.get("/set-cookie", (req, res) => {
+  res.cookie("test_cookie", "cookie_value");
+  res.send("Cookie set!");
+});
+
+app.get("/get-cookie", (req, res) => {
+  const testCookieValue = req.cookies.test_cookie;
+  res.send(`Test Cookie Value: ${testCookieValue}`);
+});
+
 // Define your OAuth 2.0 client credentials
 const clientId = process.env.VITE_CLIENTID;
 const clientSecret = process.env.VITE_CLIENTSECRET;
@@ -37,25 +63,40 @@ app.post("/exchange-tokens", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+app.post("/get-refresh-token", function(req, res) {
+  console.log(req.cookies)
+  const refreshTokenValue = req.cookies.refresh_token;
+  console.log(refreshTokenValue)
+  if (refreshTokenValue) {
+    console.log("Refresh Token: " + refreshTokenValue);
+    res.send(refreshTokenValue);
+  } else {
+    console.log("Refresh Token not found in the cookies.");
+    res.status(404).send("Refresh Token not found");
+  }
+});
 
-app.post("/refresh-token-exchange", async (req, res) => {
-  console.log("hello!")
-  const refreshToken = req.body.refreshtoken; // Use req.body.refreshtoken
-  res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: true,  });
-  console.log("cookie:" + res.get('Set-Cookie'))
-  console.log("Refresh Token: " + req.cookies.refresh_token + "DOne")
+
+app.get("/refresh-token-exchange", async function(req, res) {
+  console.log("hello!");
+  const refreshToken = req.query.refreshtoken; // Use req.body.refreshtoken
+  console.log(refreshToken);
+  
   try {
+    //await res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
     const newAccessToken = await exchangeRefreshTokenForAccessToken(
       refreshToken
     );
-    //console.log("Access Token: ", newAccessToken.data);
-    // Send the new access token in the response
+    const expirySeconds = (newAccessToken.data.expires_in)
+    const expiryDate = new Date(Date.now() + expirySeconds* 1000)
+    console.log(expiryDate)
+    await res.cookie("access_token", newAccessToken, {httpOnly: true, secure: true, expires: expiryDate,});
+    console.log(req.cookies)
     res.json({ access_token: newAccessToken.data });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 
 // Helper function to exchange authorization code for tokens, including a refresh token
@@ -107,7 +148,7 @@ async function exchangeRefreshTokenForAccessToken(refreshtoken) {
       }
     );
     //console.log(response);
-    
+
     return response;
   } catch (error) {
     //console.log(error);
