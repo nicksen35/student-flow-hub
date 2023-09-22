@@ -868,3 +868,66 @@ h1 {
   margin-left:-1%;
 
 }
+
+.dsbclassroom-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+.dsbclassroom-content a {
+  color: black;
+  padding: 15px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dsbclassroom-content a:hover {background-color: #f1f1f1}
+
+.dsb-classroomdropdown:hover .dsbclassroom-content {
+  display: block;
+  border: 1px solid; /* Corrected syntax for border */
+  position: absolute;
+}
+.dsb-classroomdropdown {
+  position: relative;
+  display: inline-block;
+  display:flex;
+  
+  
+}
+.dashboarddown {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  margin:0;
+}
+.dsb-subtitle
+{
+  display:flex;
+  border-bottom:$onepx-solid;
+  width:100%;
+  justify-content: center;
+  align-items: center;
+  
+}
+.dsb-widgetname
+{
+  text-align:left !important;
+  background-color: white;
+  height:75%;
+  margin-bottom:2%;
+  margin-top:2%;
+  padding-bottom:2.5%;
+  padding-top:2.5%;
+  border-radius:5px;
+  font-size:larger;
+  border: $onepx-solid;
+  width:90%;
+  text-indent: 2%;
+}

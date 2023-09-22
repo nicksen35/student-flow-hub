@@ -64,11 +64,18 @@ function App() {
               setSignedIn(
                 gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
               );
+              console.log(
+                gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
+              );
               setUser(user);
               const authCode = response.code;
               // Now you have the authorization code (authCode)
               console.log("Authorization Code:", authCode);
               if (user) {
+                console.log(
+                  gapi.auth2.getAuthInstance().currentUser.get().isSignedIn()
+                );
+                setSignedIn(true);
                 axios
                   .post("http://localhost:3000/exchange-tokens", {
                     code: authCode,
@@ -87,29 +94,28 @@ function App() {
     });
   }
   function checkAccessTokenInCookies() {
-    console.log("hello!")
+    console.log("hello!");
     axios
-      .get(
-        `http://localhost:3000/check-access-token`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, 
-        }
-      )
+      .get(`http://localhost:3000/check-access-token`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      })
       .then((response) => {
-        console.log(response.data)
-        const responsedata = response.data
-        if (responsedata !== '') {
-          console.log("Hello")
-          axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${responsedata}`)
-          .then((response) => {
-            setUser(response.data)
-            console.log(response.data)
-            setSignedIn(true);
-          })
-          
+        console.log(response.data);
+        const responsedata = response.data;
+        if (responsedata !== "") {
+          console.log("Hello");
+          axios
+            .get(
+              `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${responsedata}`
+            )
+            .then((response) => {
+              setUser(response.data);
+              console.log(response.data);
+              setSignedIn(true);
+            });
         } else {
           // Access token not found in cookies, trigger a refresh
           ReloadAccessToken(refreshtoken);
@@ -158,16 +164,7 @@ function App() {
         console.error(error);
       });
   }
-  function classroomAPICall() {
-    gapi.client.classroom.courses
-      .list()
-      .then(function (response) {
-        console.log(response.result);
-      })
-      .catch(function (error) {
-        console.error("Error making Classroom API request:", error);
-      });
-  }
+ 
   function getRefreshToken() {
     axios
       .get("http://localhost:3000/get-refresh-token", {
@@ -195,10 +192,7 @@ function App() {
       });
   }
   useEffect(() => {
-    // Check access token in cookies and authenticate the user if necessary
-    checkAccessTokenInCookies();
-  
-    // Initialize the Google API client
+    console.log(isSignedIn);
     gapi.load("client:auth2", function () {
       gapi.client
         .init({
@@ -208,26 +202,21 @@ function App() {
           scope: scope,
         })
         .then(function () {
-          // Check if the user is already signed in
           const authInstance = gapi.auth2.getAuthInstance();
           const isUserSignedIn = authInstance.isSignedIn.get();
           setSignedIn(isUserSignedIn);
-          
+
           if (!isUserSignedIn) {
             // If the user is not signed in, set the user
             const currentUser = authInstance.currentUser.get();
             setUser(currentUser);
-          } else {
-            // If the user is signed in, call classroomAPICall or other API functions as needed
-            classroomAPICall();
-            // Call other API functions as needed (e.g., gmailAPICall())
           }
         })
         .catch(function (error) {
           console.error("Error initializing Google API client:", error);
         });
-    })
-  }, []); // An empty dependency array ensures this runs once when the component mounts
+    });
+  }, [isSignedIn]); // An empty dependency array ensures this runs once when the component mounts
 
   return (
     <>
