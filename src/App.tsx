@@ -13,7 +13,6 @@ import { googleLogout } from "@react-oauth/google";
 import { gapi } from "gapi-script";
 import axios from "axios";
 
-
 const scopes = [
   "https://www.googleapis.com/auth/classroom.courses",
   "https://www.googleapis.com/auth/gmail.readonly",
@@ -43,7 +42,6 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [refreshtoken, setRefreshToken] = useState<string>("");
   const [isSignedIn, setSignedIn] = useState<boolean>(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   function initClient() {
     gapi.load("client:auth2", function () {
       gapi.client
@@ -78,7 +76,7 @@ function App() {
                   .then((response) => {
                     const refresh_token = response.data.refresh_token;
                     setRefreshToken(refresh_token);
-                    console.log(refresh_token);
+                    SaveRefreshToken(refresh_token);
                   })
                   .catch((error) => {
                     console.error(error);
@@ -88,23 +86,78 @@ function App() {
         });
     });
   }
-  function ReloadAccessToken() {
+  function checkAccessTokenInCookies() {
+    console.log("hello!")
     axios
-    .get(`http://localhost:3000/refresh-token-exchange?refreshtoken=${refreshtoken}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true, // Send cookies with the request
-    })
-    .then((response) => {
-      const accessToken = response.data.access_token;
-      console.log(accessToken);
-      // You can use the new access token as needed
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-}
+      .get(
+        `http://localhost:3000/check-access-token`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, 
+        }
+      )
+      .then((response) => {
+        console.log(response.data)
+        const responsedata = response.data
+        if (responsedata !== '') {
+          console.log("Hello")
+          axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${responsedata}`)
+          .then((response) => {
+            setUser(response.data)
+            console.log(response.data)
+            setSignedIn(true);
+          })
+          
+        } else {
+          // Access token not found in cookies, trigger a refresh
+          ReloadAccessToken(refreshtoken);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+  function SaveRefreshToken(refreshToken: string) {
+    axios
+      .get(
+        `http://localhost:3000/save-refresh-token?refreshtoken=${refreshToken}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Send cookies with the request
+        }
+      )
+      .then((response) => {
+        const accessToken = response.data.access_token;
+        console.log(accessToken);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+  function ReloadAccessToken(refreshToken: string) {
+    axios
+      .get(
+        `http://localhost:3000/refresh-token-exchange?refreshtoken=${refreshToken}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true, // Send cookies with the request
+        }
+      )
+      .then((response) => {
+        const accessToken = response.data.access_token;
+        console.log(accessToken);
+        // You can use the new access token as needed
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
   function classroomAPICall() {
     gapi.client.classroom.courses
       .list()
@@ -121,7 +174,7 @@ function App() {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true
+        withCredentials: true,
       })
       .then((response) => {
         const refresh_token = response.data; // Use response.data directly
@@ -130,7 +183,7 @@ function App() {
       .catch((error) => {
         console.error(error);
       });
-  }  
+  }
   function gmailAPICall() {
     gapi.client.gmail.users.messages
       .get()
@@ -142,23 +195,44 @@ function App() {
       });
   }
   useEffect(() => {
-    if (user) {
-      classroomAPICall();
-      //gmailAPICall();
-    }
-  }, [user]);
-
-  const logOut = () => {
-    googleLogout();
-    setProfile(null);
-  };
+    // Check access token in cookies and authenticate the user if necessary
+    checkAccessTokenInCookies();
+  
+    // Initialize the Google API client
+    gapi.load("client:auth2", function () {
+      gapi.client
+        .init({
+          apiKey: import.meta.env.VITE_APIKEY,
+          clientId: import.meta.env.VITE_CLIENTID,
+          discoveryDocs: discoverydocs,
+          scope: scope,
+        })
+        .then(function () {
+          // Check if the user is already signed in
+          const authInstance = gapi.auth2.getAuthInstance();
+          const isUserSignedIn = authInstance.isSignedIn.get();
+          setSignedIn(isUserSignedIn);
+          
+          if (!isUserSignedIn) {
+            // If the user is not signed in, set the user
+            const currentUser = authInstance.currentUser.get();
+            setUser(currentUser);
+          } else {
+            // If the user is signed in, call classroomAPICall or other API functions as needed
+            classroomAPICall();
+            // Call other API functions as needed (e.g., gmailAPICall())
+          }
+        })
+        .catch(function (error) {
+          console.error("Error initializing Google API client:", error);
+        });
+    })
+  }, []); // An empty dependency array ensures this runs once when the component mounts
 
   return (
     <>
       {isSignedIn ? (
         <>
-        <button onClick={() => ReloadAccessToken()}> Hello </button>
-        <button onClick={() => getRefreshToken()}> Hello </button>
           <Header />
           <Routes>
             <Route
@@ -176,7 +250,6 @@ function App() {
         </>
       ) : (
         <>
-        <button onClick={() => getRefreshToken()}> Hello </button>
           <div className="signinpagecontainer">
             <div className="signinpage">
               <h1 id="signintitle" className="signintitle">

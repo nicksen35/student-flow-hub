@@ -5,16 +5,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 
-
 const corsOptions = {
-  origin: 'http://localhost:5173', // Specify the exact origin
+  origin: "http://localhost:5173", // Specify the exact origin
   credentials: true, // Allow credentials (cookies)
 };
 
 const app = express();
 const port = 3000;
 dotenv.config();
-console.log(cookieParser)
+console.log(cookieParser);
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
@@ -22,13 +21,11 @@ app.use(cookieParser());
 
 app.use((err, req, res, next) => {
   if (err) {
-    console.error('Cookie parsing error:', err);
+    console.error("Cookie parsing error:", err);
     // Handle the error or send an error response if needed
   }
   next();
 });
-
-
 
 app.get("/set-cookie", (req, res) => {
   res.cookie("test_cookie", "cookie_value");
@@ -63,10 +60,10 @@ app.post("/exchange-tokens", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-app.get("/get-refresh-token", function(req, res) {
-  console.log(req.cookies)
+app.get("/get-refresh-token", function (req, res) {
+  console.log(req.cookies);
   const refreshTokenValue = req.cookies.refresh_token;
-  console.log(refreshTokenValue)
+  console.log(refreshTokenValue);
   if (refreshTokenValue) {
     console.log("Refresh Token: " + refreshTokenValue);
     res.send(refreshTokenValue);
@@ -76,28 +73,55 @@ app.get("/get-refresh-token", function(req, res) {
   }
 });
 
-
-app.get("/refresh-token-exchange", async function(req, res) {
-  console.log("hello!");
+app.get("/save-refresh-token", async function (req, res) {
   const refreshToken = req.query.refreshtoken; // Use req.body.refreshtoken
   console.log(refreshToken);
-  
   try {
-    await res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
+    await res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
     const newAccessToken = await exchangeRefreshTokenForAccessToken(
       refreshToken
     );
-    const expirySeconds = (newAccessToken.data.expires_in)
-    const expiryDate = new Date(Date.now() + expirySeconds* 1000)
-    console.log(expiryDate)
-    res.cookie("access_token", newAccessToken.data.access_token, {httpOnly: true, secure: true, expires: expiryDate});
-    console.log(req.cookies)
+    const expirySeconds = newAccessToken.data.expires_in;
+    const expiryDate = new Date(Date.now() + expirySeconds * 1000);
+    res.cookie("access_token", newAccessToken.data.access_token, {
+      httpOnly: true,
+      secure: true,
+      expires: expiryDate,
+    });
     res.json({ access_token: newAccessToken.data });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+app.get("/refresh-token-exchange", async function (req, res) {
+  const refreshToken = req.query.refreshtoken;
 
+  if(req.cookies.access_token === null) {
+    try {
+      const newAccessToken = await exchangeRefreshTokenForAccessToken(
+        refreshToken
+      );
+      const expirySeconds = newAccessToken.data.expires_in;
+      const expiryDate = new Date(Date.now() + expirySeconds * 1000);
+      res.cookie("access_token", newAccessToken.data.access_token, {
+        httpOnly: true,
+        secure: true,
+        expires: expiryDate,
+      });
+      res.json({ access_token: newAccessToken.data });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  
+});
+app.get("/check-access-token", function(req, res) {
+  const accessToken = req.cookies.access_token
+  res.send(accessToken) 
+})
 
 // Helper function to exchange authorization code for tokens, including a refresh token
 async function exchangeAuthorizationCodeForTokens(code) {
