@@ -17,6 +17,14 @@ const scopes = [
   "https://www.googleapis.com/auth/classroom.courses",
   "https://www.googleapis.com/auth/gmail.readonly",
   "https://www.googleapis.com/auth/calendar.readonly",
+  "https://www.googleapis.com/auth/classroom.course-work.readonly",
+  "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly",
+  "https://www.googleapis.com/auth/classroom.topics.readonly",
+  "https://www.googleapis.com/auth/classroom.rosters.readonly",
+  "https://www.googleapis.com/auth/classroom.push-notifications",
+  "https://www.googleapis.com/auth/classroom.announcements.readonly"
+
+
   // Add more scopes as needed
 ];
 const scope = scopes.join(" "); // Combine the scopes into a single string

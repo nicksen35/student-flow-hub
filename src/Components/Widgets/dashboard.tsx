@@ -10,7 +10,7 @@ import todoImage from "../../assets/ToDoList.png";
 import timerImage from "../../assets/Timer.png";
 
 const Dashboard = () => {
-  const [classes, setClasses] = useState([]);
+  const [classroomInfo, setClassroomInfo] = useState([]);
   const classroomdropdownoptions = [
     "Assignments",
     "Classes",
@@ -19,28 +19,129 @@ const Dashboard = () => {
     "Teachers",
   ];
   const [CRWidget, setCRWidget] = useState({
-    widget1: classroomdropdownoptions[0]
+    widget1: classroomdropdownoptions[0],
   });
-  function classroomAPICall() {
+  function fetchCourses() {
     gapi.client.classroom.courses
       .list()
       .then(function (response) {
         console.log(response.result.courses);
-        setClasses(response.result.courses);
+        setClassroomInfo(response.result.courses);
       })
       .catch(function (error) {
         console.error("Error making Classroom API request:", error);
       });
   }
+  function getAssignments(courseId: string) {
+    gapi.client.classroom.courses.courseWork
+      .list({
+        courseId: courseId,
+      })
+      .then(function (response) {
+        console.log(response.result);
+      });
+  }
+  function getCourseWork(courseId: string) {
+    gapi.client.classroom.courses.courseWork
+      .list({
+        courseId: courseId,
+      })
+      .then(function (response) {
+        console.log(response.result);
+        const courseWorks = response.result.courseWork;
+        if (courseWorks && courseWorks.length > 0) {
+          courseWorks.forEach(function (courseWork) {
+            const courseWorkId: string = courseWork.id;
+            console.log(courseWorkId);
+            getGrades(courseId, courseWorkId);
+          });
+        }
+      });
+  }
+  function getGrades(courseId: string, courseWorkId: string) {
+    gapi.client.classroom.courses.courseWork.studentSubmissions
+      .list({
+        courseId: courseId,
+        courseWorkId: courseWorkId,
+      })
+      .then(function (response) {
+        console.log(response.result);
+      })
+      .catch(function (error) {
+        console.error("Error fetching student submissions:", error);
+      });
+  }
 
+  function fetchWithCourseId(type: string) {
+    gapi.client.classroom.courses.list().then(function (response) {
+      const courses = response.result.courses;
+
+      if (courses && courses.length > 0) {
+        courses.forEach(function (course) {
+          const courseId = course.id;
+          console.log("Fetching announcements for course with ID: " + courseId);
+          switch (type) {
+            case "Assignments":
+              getAssignments(courseId);
+              break;
+            case "Announcements":
+              getAnnouncementsForCourse(courseId);
+              break;
+            case "Grades":
+              getCourseWork(courseId);
+              break;
+            case "Teacher":
+              getClassRoster(courseId);
+          }
+        });
+      } else {
+        console.log("No courses found.");
+      }
+    });
+  }
+  function getAnnouncementsForCourse(courseId: string) {
+    gapi.client.classroom.courses.announcements
+      .list({
+        courseId: courseId,
+      })
+      .then(function (response) {
+        console.log("Announcements for course with ID " + courseId + ":");
+        console.log(response.result);
+      });
+  }
+  function getClassRoster(courseId: string) {
+    gapi.client.classroom.courses.teachers
+      .list({
+        courseId: courseId,
+      })
+      .then(function (response) {
+        console.log(response.result);
+      });
+  }
   useEffect(() => {
-    classroomAPICall();
-  }, []);
+    switch (CRWidget.widget1) {
+      case classroomdropdownoptions[0]:
+        fetchWithCourseId("Assignments");
+        break;
+      case classroomdropdownoptions[1]:
+        console.log("hI MOM");
+        fetchCourses();
+        break;
+      case classroomdropdownoptions[2]:
+        fetchWithCourseId("Announcements");
+        break;
+      case classroomdropdownoptions[3]:
+        fetchWithCourseId("Grades");
+        break;
+      case classroomdropdownoptions[4]:
+        fetchWithCourseId("Teacher");
+    }
+  }, [CRWidget.widget1]);
 
   useEffect(() => {
     // This useEffect will run whenever the "classes" state changes
-    console.log(classes);
-  }, [classes]);
+    console.log(classroomInfo);
+  }, [classroomInfo]);
 
   interface WidgetProp {
     onClick: () => void;
@@ -84,7 +185,7 @@ const Dashboard = () => {
     };
     return (
       <>
-        <div className="classroomwidget" onClick={prop.onClick}>
+        <div className="classroomwidget">
           <div className="classroomwidgetheader">
             <WidgetTitle
               widgettitle="Google Classroom"
@@ -93,9 +194,9 @@ const Dashboard = () => {
           </div>
           <div className="dsb-classroomdropdown">
             <div className="dsb-subtitle">
-              <button className="dsb-widgetname">{prop.WidgetName} <i className="dashboarddown" ></i></button>
-
-                
+              <button className="dsb-widgetname">
+                {prop.WidgetName} <i className="dashboarddown"></i>
+              </button>
             </div>
             <div className="dsbclassroom-content">
               {classroomdropdownoptions.map((options, index) => (
@@ -108,8 +209,8 @@ const Dashboard = () => {
               ))}
             </div>
           </div>
-          <div className="classroomcontent">
-            {classes.map((course) => (
+          <div className="classroomcontent" onClick={prop.onClick}>
+            {classroomInfo.map((course) => (
               <div className="class" key={course.id}>
                 {course.name}
               </div>
@@ -159,7 +260,11 @@ const Dashboard = () => {
     <>
       <div className="widgetcontainer">
         <div className="topwidgetcontainer">
-          <ClassroomWidget onClick={() => navigate("/classroom")} WidgetName={CRWidget.widget1} WidgetID={0} />
+          <ClassroomWidget
+            onClick={() => navigate("/classroom")}
+            WidgetName={CRWidget.widget1}
+            WidgetID={1}
+          />
           <CalendarWidget onClick={() => navigate("/calendar")} />
           <GmailWidget onClick={() => navigate("/gmail")} />
         </div>
