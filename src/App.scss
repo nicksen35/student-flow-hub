@@ -146,8 +146,8 @@ $button-active-blue: #1669F2;
   border: $onepx-solid;
   border-top: 0;
   flex: 1;
-  overflow-y: hidden; /* Hide overflowing content */
-  white-space: wrap; /* Prevent text from wrapping */
+  overflow-y:hidden ; 
+  white-space: wrap;
   text-overflow: ellipsis; 
 }
 .gmailwidget {
@@ -940,5 +940,15 @@ h1 {
 .classroom-contentp
 {
   margin:5px;
-  text-indent:2%;
+  margin-left:2%;
+}
+.classroomcontent
+{
+  text-overflow: ellipsis; 
+  height:60%;
+  overflow-y:scroll;
+}
+.classroomcontent::-webkit-scrollbar
+{
+  display: none;
 }
