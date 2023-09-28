@@ -11,6 +11,8 @@ import timerImage from "../../assets/Timer.png";
 
 const Dashboard = () => {
   const [classroomInfo, setClassroomInfo] = useState([]);
+  const [user, setCurrentUser] = useState();
+  const [assignments, setAssignments] = useState([]);
   const classroomdropdownoptions = [
     "Assignments",
     "Classes",
@@ -32,16 +34,68 @@ const Dashboard = () => {
         console.error("Error making Classroom API request:", error);
       });
   }
-  function getAssignments(courseId: string) {
-    gapi.client.classroom.courses.courseWork
-      .list({
-        courseId: courseId,
-      })
-      .then(function (response) {
-        console.log(response.result);
+  async function getAssignments(courseIds: string[]) {
+    try {
+      console.log("multiple function calls!!");
+      const allAssignments = [];
+      // Use Promise.all to make API calls for each course in parallel
+      await Promise.all(
+        courseIds.map(async (courseId) => {
+          const response = await gapi.client.classroom.courses.courseWork.list({
+            courseId: courseId,
+          });
+
+          if (response.result.courseWork) {
+            const courseAssignments = response.result.courseWork.map(
+              (assignment) => {
+                const { title, dueDate, dueTime, description, alternateLink } =
+                  assignment;
+                return {
+                  coursework_title: title,
+                  coursework_dueDate: dueDate,
+                  coursework_dueTime: dueTime,
+                  coursework_description: description,
+                  coursework_altlink: alternateLink,
+                };
+              }
+            );
+            allAssignments.push(...courseAssignments);
+          } else {
+            console.error(`Could not find assignments for course ${courseId}`);
+          }
+        })
+      );
+
+      // Sort assignments by due date
+      allAssignments.sort((a, b) => {
+        if (a.coursework_dueDate && b.coursework_dueDate) {
+          const dueDateA = new Date(
+            a.coursework_dueDate.year,
+            a.coursework_dueDate.month - 1,
+            a.coursework_dueDate.day
+          );
+          const dueDateB = new Date(
+            b.coursework_dueDate.year,
+            b.coursework_dueDate.month - 1,
+            b.coursework_dueDate.day
+          );
+          return dueDateB - dueDateA;
+        } else if (a.coursework_dueDate) {
+          return -1;
+        } else if (b.coursework_dueDate) {
+          return 1;
+        } else {
+          return 0;
+        }
       });
+      setAssignments(allAssignments);
+      console.log(assignments);
+    } catch (error) {
+      console.error("Error fetching assignments:", error);
+    }
   }
-  function getCourseWork(courseId: string) {
+
+  function getCourseWork(courseIds: string[]) {
     gapi.client.classroom.courses.courseWork
       .list({
         courseId: courseId,
@@ -58,7 +112,7 @@ const Dashboard = () => {
         }
       });
   }
-  function getGrades(courseId: string, courseWorkId: string) {
+  function getGrades(courseIds: string[], courseWorkId: string) {
     gapi.client.classroom.courses.courseWork.studentSubmissions
       .list({
         courseId: courseId,
@@ -77,29 +131,32 @@ const Dashboard = () => {
       const courses = response.result.courses;
 
       if (courses && courses.length > 0) {
+        const courseIds = [];
         courses.forEach(function (course) {
-          const courseId = course.id;
-          console.log("Fetching announcements for course with ID: " + courseId);
-          switch (type) {
-            case "Assignments":
-              getAssignments(courseId);
-              break;
-            case "Announcements":
-              getAnnouncementsForCourse(courseId);
-              break;
-            case "Grades":
-              getCourseWork(courseId);
-              break;
-            case "Teacher":
-              getClassRoster(courseId);
-          }
+          courseIds.push(course.id);
+          console.log(courseIds);
         });
+        console.log("Fetching announcements for course with ID: " + courseIds);
+        switch (type) {
+          case "Assignments":
+            console.log("calling this function mroe than once");
+            getAssignments(courseIds);
+            break;
+          case "Announcements":
+            getAnnouncementsForCourse(courseIds);
+            break;
+          case "Grades":
+            getCourseWork(courseIds);
+            break;
+          case "Teacher":
+            getClassRoster(courseIds);
+        }
       } else {
         console.log("No courses found.");
       }
     });
   }
-  function getAnnouncementsForCourse(courseId: string) {
+  function getAnnouncementsForCourse(courseIds: string[]) {
     gapi.client.classroom.courses.announcements
       .list({
         courseId: courseId,
@@ -109,7 +166,7 @@ const Dashboard = () => {
         console.log(response.result);
       });
   }
-  function getClassRoster(courseId: string) {
+  function getClassRoster(courseIds: string[]) {
     gapi.client.classroom.courses.teachers
       .list({
         courseId: courseId,
@@ -119,24 +176,28 @@ const Dashboard = () => {
       });
   }
   useEffect(() => {
-    switch (CRWidget.widget1) {
-      case classroomdropdownoptions[0]:
-        fetchWithCourseId("Assignments");
-        break;
-      case classroomdropdownoptions[1]:
-        console.log("hI MOM");
-        fetchCourses();
-        break;
-      case classroomdropdownoptions[2]:
-        fetchWithCourseId("Announcements");
-        break;
-      case classroomdropdownoptions[3]:
-        fetchWithCourseId("Grades");
-        break;
-      case classroomdropdownoptions[4]:
-        fetchWithCourseId("Teacher");
+    const authInstance = gapi.auth2.getAuthInstance();
+    setCurrentUser(authInstance.currentUser.get());
+    if (user) {
+      switch (CRWidget.widget1) {
+        case classroomdropdownoptions[0]:
+          fetchWithCourseId("Assignments");
+          break;
+        case classroomdropdownoptions[1]:
+          console.log("hI MOM");
+          fetchCourses();
+          break;
+        case classroomdropdownoptions[2]:
+          fetchWithCourseId("Announcements");
+          break;
+        case classroomdropdownoptions[3]:
+          fetchWithCourseId("Grades");
+          break;
+        case classroomdropdownoptions[4]:
+          fetchWithCourseId("Teacher");
+      }
     }
-  }, [CRWidget.widget1]);
+  }, [CRWidget.widget1, user]);
 
   useEffect(() => {
     // This useEffect will run whenever the "classes" state changes
@@ -184,40 +245,59 @@ const Dashboard = () => {
       console.log(event);
     };
     return (
-      <>
-        <div className="classroomwidget">
-          <div className="classroomwidgetheader">
-            <WidgetTitle
-              widgettitle="Google Classroom"
-              imageSource={classroomImage}
-            />
+      <div className="classroomwidget">
+        <div className="classroomwidgetheader">
+          <WidgetTitle
+            widgettitle="Google Classroom"
+            imageSource={classroomImage}
+          />
+        </div>
+        <div className="dsb-classroomdropdown">
+          <div className="dsb-subtitle">
+            <button className="dsb-widgetname">
+              {prop.WidgetName} <i className="dashboarddown"></i>
+            </button>
           </div>
-          <div className="dsb-classroomdropdown">
-            <div className="dsb-subtitle">
-              <button className="dsb-widgetname">
-                {prop.WidgetName} <i className="dashboarddown"></i>
-              </button>
-            </div>
-            <div className="dsbclassroom-content">
-              {classroomdropdownoptions.map((options, index) => (
-                <>
-                  <a key={index} onClick={() => handleHeaderChange(index)}>
-                    {" "}
-                    {options}{" "}
-                  </a>
-                </>
-              ))}
-            </div>
-          </div>
-          <div className="classroomcontent" onClick={prop.onClick}>
-            {classroomInfo.map((course) => (
-              <div className="class" key={course.id}>
-                {course.name}
-              </div>
+          <div className="dsbclassroom-content">
+            {classroomdropdownoptions.map((options, index) => (
+              <a key={index} onClick={() => handleHeaderChange(index)}>
+                {" "}
+                {options}{" "}
+              </a>
             ))}
           </div>
         </div>
-      </>
+        <div className="classroomcontent" onClick={prop.onClick}>
+          {user &&
+            (() => {
+              switch (CRWidget.widget1) {
+                case classroomdropdownoptions[0]:
+                  return (
+                    <div className="content-wrapper">
+                      {assignments.map((assignment, index) => (
+                        <p key={index} className="classroom-contentp">{assignment.coursework_title} - OverflowingTxextjktljr </p>
+                      ))}
+                    </div>
+                  );
+                case classroomdropdownoptions[1]:
+                  console.log("hI MOM");
+                  fetchCourses();
+                  break;
+                case classroomdropdownoptions[2]:
+                  fetchWithCourseId("Announcements");
+                  break;
+                case classroomdropdownoptions[3]:
+                  fetchWithCourseId("Grades");
+                  break;
+                case classroomdropdownoptions[4]:
+                  fetchWithCourseId("Teacher");
+                  break;
+                default:
+                  break;
+              }
+            })()}
+        </div>
+      </div>
     );
   };
 

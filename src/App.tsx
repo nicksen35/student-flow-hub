@@ -101,94 +101,6 @@ function App() {
         });
     });
   }
-  function checkAccessTokenInCookies() {
-    console.log("hello!");
-    axios
-      .get(`http://localhost:3000/check-access-token`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      })
-      .then((response) => {
-        console.log(response.data);
-        const responsedata = response.data;
-        if (responsedata !== "") {
-          console.log("Hello");
-          axios
-            .get(
-              `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${responsedata}`
-            )
-            .then((response) => {
-              setUser(response.data);
-              console.log(response.data);
-              setSignedIn(true);
-            });
-        } else {
-          // Access token not found in cookies, trigger a refresh
-          ReloadAccessToken(refreshtoken);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-  function SaveRefreshToken(refreshToken: string) {
-    axios
-      .get(
-        `http://localhost:3000/save-refresh-token?refreshtoken=${refreshToken}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, // Send cookies with the request
-        }
-      )
-      .then((response) => {
-        const accessToken = response.data.access_token;
-        console.log(accessToken);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-  function ReloadAccessToken(refreshToken: string) {
-    axios
-      .get(
-        `http://localhost:3000/refresh-token-exchange?refreshtoken=${refreshToken}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true, // Send cookies with the request
-        }
-      )
-      .then((response) => {
-        const accessToken = response.data.access_token;
-        console.log(accessToken);
-        // You can use the new access token as needed
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
- 
-  function getRefreshToken() {
-    axios
-      .get("http://localhost:3000/get-refresh-token", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      })
-      .then((response) => {
-        const refresh_token = response.data; // Use response.data directly
-        console.log(refresh_token);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
   function gmailAPICall() {
     gapi.client.gmail.users.messages
       .get()
@@ -212,6 +124,7 @@ function App() {
         .then(function () {
           const authInstance = gapi.auth2.getAuthInstance();
           const isUserSignedIn = authInstance.isSignedIn.get();
+          setUser(authInstance.currentUser.get())
           setSignedIn(isUserSignedIn);
 
           if (!isUserSignedIn) {
@@ -227,54 +140,54 @@ function App() {
   }, [isSignedIn]); // An empty dependency array ensures this runs once when the component mounts
 
   return (
-    <>
-      {isSignedIn ? (
-        <>
-          <Header />
-          <Routes>
-            <Route
-              path="/"
-              element={<Navigate to="dashboard" replace={true} />}
-            />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="classroom" element={<ClassroomWidgetPage />} />
-            <Route path="gmail" element={<GmailWidgetPage />} />
-            <Route path="calendar" element={<CalendarWidgetPage />} />
-            <Route path="projects/:page" element={<ProjectsWidgetPage />} />
-            <Route path="timer/:page" element={<TimerWidgetPage />} />
-            <Route path="todo/:page" element={<ToDoWidgetPage />} />
-          </Routes>
-        </>
-      ) : (
-        <>
-          <div className="signinpagecontainer">
-            <div className="signinpage">
-              <h1 id="signintitle" className="signintitle">
-                {" "}
-                Welcome To StudentFlow Hub!{" "}
-              </h1>
-              <h2 id="signinsubtitle" className="signintitle">
-                {" "}
-                Get Started By Signing In!{" "}
-              </h2>
-              <div className="googlebuttoncontainer">
-                <div onClick={() => initClient()} className="google-btn">
-                  <div className="google-icon-wrapper">
-                    <img
-                      className="google-icon"
-                      src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
-                    />
-                  </div>
-                  <p className="btn-text">
-                    <b>Sign In With Google</b>
-                  </p>
+  <>
+    {isSignedIn && user ? ( // Check both isSignedIn and user
+      <>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={<Navigate to="dashboard" replace={true} />}
+          />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="classroom" element={<ClassroomWidgetPage />} />
+          <Route path="gmail" element={<GmailWidgetPage />} />
+          <Route path="calendar" element={<CalendarWidgetPage />} />
+          <Route path="projects/:page" element={<ProjectsWidgetPage />} />
+          <Route path="timer/:page" element={<TimerWidgetPage />} />
+          <Route path="todo/:page" element={<ToDoWidgetPage />} />
+        </Routes>
+      </>
+    ) : (
+      <>
+        <div className="signinpagecontainer">
+          <div className="signinpage">
+            <h1 id="signintitle" className="signintitle">
+              {" "}
+              Welcome To StudentFlow Hub!{" "}
+            </h1>
+            <h2 id="signinsubtitle" className="signintitle">
+              {" "}
+              Get Started By Signing In!{" "}
+            </h2>
+            <div className="googlebuttoncontainer">
+              <div onClick={() => initClient()} className="google-btn">
+                <div className="google-icon-wrapper">
+                  <img
+                    className="google-icon"
+                    src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                  />
                 </div>
+                <p className="btn-text">
+                  <b>Sign In With Google</b>
+                </p>
               </div>
             </div>
           </div>
-        </>
-      )}
-    </>
-  );
-}
+        </div>
+      </>
+    )}
+  </>
+);
+    }
 export default App;

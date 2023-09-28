@@ -146,6 +146,9 @@ $button-active-blue: #1669F2;
   border: $onepx-solid;
   border-top: 0;
   flex: 1;
+  overflow-y: hidden; /* Hide overflowing content */
+  white-space: wrap; /* Prevent text from wrapping */
+  text-overflow: ellipsis; 
 }
 .gmailwidget {
   height: $top-widget-height;
@@ -877,7 +880,7 @@ h1 {
   border-radius:5px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   left:5%;
-  top:85%;
+  top:65%;
   z-index: 1;
 }
 .dsbclassroom-content a {
@@ -933,4 +936,9 @@ h1 {
   border: $onepx-solid;
   width:90%;
   text-indent: 2%;
+}
+.classroom-contentp
+{
+  margin:5px;
+  text-indent:2%;
 }
