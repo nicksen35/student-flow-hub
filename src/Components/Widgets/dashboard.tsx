@@ -16,13 +16,17 @@ import {
   fetchWithCourseId,
   getAnnouncementsForCourse,
   getClassRoster,
-} from './classroomfunctions'
+} from "./classroomfunctions";
 
+import { GetMail } from "./gmailfunctions";
 const Dashboard = () => {
   const [classroomInfo, setClassroomInfo] = useState([]);
   const [user, setCurrentUser] = useState();
   const [assignments, setAssignments] = useState([]);
-  const [announcements, setAnnouncements] = useState([])
+  const [announcements, setAnnouncements] = useState([]);
+  const [teachers, getTeachers] = useState([]);
+  const [mail, setMail] = useState([]);
+  const [fetchMail, setFetchMail] = useState(true);
   const classroomdropdownoptions = [
     "Assignments",
     "Classes",
@@ -37,7 +41,7 @@ const Dashboard = () => {
   function fetchWithCourseId(type: string) {
     gapi.client.classroom.courses.list().then(function (response) {
       const courses = response.result.courses;
-  
+
       if (courses && courses.length > 0) {
         const courseIds = [];
         courses.forEach(function (course) {
@@ -57,7 +61,7 @@ const Dashboard = () => {
             getCourseWork(courseIds);
             break;
           case "Teacher":
-            getClassRoster(courseIds);
+            getClassRoster(courseIds, getTeachers);
         }
       } else {
         console.log("No courses found.");
@@ -113,14 +117,63 @@ const Dashboard = () => {
     );
   };
 
+  useEffect(() => {
+    if (fetchMail) {
+      GetMail(setMail, 25);
+      setFetchMail(false); // Set to false to avoid repeated calls
+    }
+    console.log("This function should not loop from UseEffect");
+  }, [fetchMail]); // Only depend on fetchMail, not mail
+
   const GmailWidget: FC<WidgetProp> = (prop) => {
+    function limitText(text: string, wordLimit: number) {
+      const words = text.split(" ");
+      if (words.length > wordLimit) {
+        return words.slice(0, wordLimit).join(" ") + "..."; // Add ellipsis if text is truncated
+      }
+      return text;
+    }
+
+
     return (
       <>
         <div className="gmailwidget" onClick={prop.onClick}>
           <div className="gmailwidgetheader">
             <WidgetTitle widgettitle="Gmail" imageSource={gmailImage} />
           </div>
-          <p> Hello</p>
+          <div className="maildashboardcontent">
+            <p className="maildashboardtitle"> Recent Mail: </p>
+
+            {mail.map((mail, index) => {
+              let isUnread = false
+              mail.gmail_labelsId.forEach(element => {
+                if (element == "UNREAD")
+                {
+                  isUnread = element.includes("UNREAD");
+                }
+              });
+              const combinedText = `${mail.gmail_subject} - ${mail.gmail_snippet}`;
+              const limitedText = limitText(combinedText, 27);
+              const subjectPart = mail.gmail_subject;
+              const restPart = limitedText.substring(subjectPart.length);
+              const gmailContentClass = `gmailcontent${isUnread ? " unread" : ""}`;
+
+              return (
+                <div className={gmailContentClass} key={index}>
+                  <div className="gmailcontenttext">
+                    <p className="gmailcontentp">
+                      <span className="gmailcontentsubject"> {subjectPart} </span>
+                      {restPart}
+                    </p>
+                    <p className="gmailcontentdate">
+                      {" "}
+                      Sent At: {mail.gmail_date}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </>
     );
@@ -157,49 +210,67 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="classroomcontent" onClick={prop.onClick}>
-        <div className="content-wrapper">
-          {user &&
-            (() => {
-              switch (CRWidget.widget1) {
-                case classroomdropdownoptions[0]:
-                  return (
-                    <>
-                      {assignments.map((assignment, index) => (
-                        <p key={index} className="classroom-contentp"> <b> {assignment.coursework_title} </b> - Due Date: {assignment.coursework_dueDate} </p>
-                      ))}
-                    </>
-                  );
-                case classroomdropdownoptions[1]:
-                  return (
-                    <>
-                    {classroomInfo.map((course) => (
-                      <div className="class" key={course.id}>
-                        {course.name}
-                      </div>
-                    ))}
-                  </>
-                  )
-                  break;
-                case classroomdropdownoptions[2]:
-                  return(
-                  <>
-                      {announcements.map((announcement, index) => (
-                        <p key={index} className="classroom-contentp"> <b> {announcement.announcement_text} </b> - Posted At {announcement.announcement_creationTime}</p>
-                      ))}
-                    </>
-                  )
-                  break;
-                case classroomdropdownoptions[3]:
-                  fetchWithCourseId("Grades");
-                  break;
-                case classroomdropdownoptions[4]:
-                  fetchWithCourseId("Teacher");
-                  break;
-                default:
-                  break;
-              }
-            })()}
-            </div>
+          <div className="content-wrapper">
+            {user &&
+              (() => {
+                switch (CRWidget.widget1) {
+                  case classroomdropdownoptions[0]:
+                    return (
+                      <>
+                        {assignments.map((assignment, index) => (
+                          <p key={index} className="classroom-contentp">
+                            {" "}
+                            <b> {assignment.coursework_title} </b> - Due Date:{" "}
+                            {assignment.coursework_dueDate}{" "}
+                          </p>
+                        ))}
+                      </>
+                    );
+                  case classroomdropdownoptions[1]:
+                    return (
+                      <>
+                        {classroomInfo.map((course) => (
+                          <div className="class" key={course.id}>
+                            {course.name}
+                          </div>
+                        ))}
+                      </>
+                    );
+                    break;
+                  case classroomdropdownoptions[2]:
+                    return (
+                      <>
+                        {announcements.map((announcement, index) => (
+                          <p key={index} className="classroom-contentp">
+                            {" "}
+                            <b> {announcement.announcement_text} </b> - Posted
+                            At {announcement.announcement_creationTime}
+                          </p>
+                        ))}
+                      </>
+                    );
+                    break;
+                  case classroomdropdownoptions[3]:
+                    fetchWithCourseId("Grades");
+                    break;
+                  case classroomdropdownoptions[4]:
+                    return (
+                      <>
+                        {teachers.map((teachers, index) => (
+                          <p key={index} className="classroom-contentp">
+                            {" "}
+                            <b> {teachers.teacher_fullName} </b> - Class:{" "}
+                            {teachers.teacher_courseId}
+                          </p>
+                        ))}
+                      </>
+                    );
+                    break;
+                  default:
+                    break;
+                }
+              })()}
+          </div>
         </div>
       </div>
     );

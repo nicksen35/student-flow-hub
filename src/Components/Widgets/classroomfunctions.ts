@@ -154,12 +154,32 @@ export async function getAnnouncementsForCourse(
   console.log(allAnnouncements);
 }
 
-export function getClassRoster(courseIds: string[]) {
-  gapi.client.classroom.courses.teachers
-    .list({
-      courseId: courseId,
-    })
-    .then(function (response) {
-      console.log(response.result);
-    });
+export async function getClassRoster(courseIds: string[], getTeachers) {
+  const allTeachers = []
+  await Promise.all(
+    courseIds.map(async (courseId) =>
+    {
+      const response = await gapi.client.classroom.courses.teachers
+      .list({
+        courseId: courseId,
+      })
+      if (response.result.teachers)
+      {
+        const courseTeachers = response.result.teachers.map(
+          (teacher) => {
+            console.log(teacher)
+            const {
+              profile,
+              courseId
+            } = teacher;
+            return{
+              teacher_fullName: profile?.name?.fullName,
+              teacher_courseId: courseId,
+            }      }
+        )
+      allTeachers.push(...courseTeachers)
+      }
+  })
+  )
+getTeachers(allTeachers)
 }

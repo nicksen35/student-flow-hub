@@ -155,7 +155,11 @@ $button-active-blue: #1669F2;
   border: $onepx-solid;
   border-top: 0;
   flex: 0.8;
-  height: 80vh;
+  height: 81.8vh;
+}
+.gmailwidget::-webkit-scrollbar
+{
+  display:none;
 }
 .bottomwidgetcontainer {
   display: grid;
@@ -940,7 +944,7 @@ h1 {
 .classroom-contentp
 {
   margin:5px;
-  margin-left:2%;
+  padding-left:2%;
 }
 .classroomcontent
 {
@@ -951,4 +955,49 @@ h1 {
 .classroomcontent::-webkit-scrollbar
 {
   display: none;
+}
+.maildashboardcontent
+{
+  text-overflow: ellipsis; 
+  height:100%;
+  overflow-y: scroll; /* Use scroll to allow scrolling */
+  min-height:60vh;
+  max-height: 74vh; /* Set a maximum height to avoid excessive scrolling */
+  
+}
+.maildashboardcontent::-webkit-scrollbar
+{
+  display:none;
+}
+.gmailcontentp
+{
+  width:95%;
+  margin:0;
+
+}
+.maildashboardtitle
+{
+  font-size:25px;
+  margin: 2%;
+}
+.gmailcontent{
+  padding-bottom:2%;
+  border-top:$onepx-solid;
+  background-color: #F5F5F5;
+  font-weight: none;
+}
+
+.gmailcontenttext
+{
+  margin-left:2%;
+  margin-top:2%;
+}
+.gmailcontent.unread
+{
+  background-color: white ;
+}
+.gmailcontent.unread .gmailcontentp .gmailcontentsubject
+{
+  font-weight:bold;
+  margin:0;
 }
