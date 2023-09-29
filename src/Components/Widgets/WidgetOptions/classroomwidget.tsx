@@ -7,7 +7,6 @@ type ClassroomProp = {
   WidgetID: number;
 };
 
-
 const ClassroomWidgetPage: FC = () => {
   const dropdownoptions = [
     "Classes",

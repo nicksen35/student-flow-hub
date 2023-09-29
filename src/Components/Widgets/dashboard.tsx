@@ -134,7 +134,6 @@ const Dashboard = () => {
       return text;
     }
 
-
     return (
       <>
         <div className="gmailwidget" onClick={prop.onClick}>
@@ -145,10 +144,9 @@ const Dashboard = () => {
             <p className="maildashboardtitle"> Recent Mail: </p>
 
             {mail.map((mail, index) => {
-              let isUnread = false
-              mail.gmail_labelsId.forEach(element => {
-                if (element == "UNREAD")
-                {
+              let isUnread = false;
+              mail.gmail_labelsId.forEach((element) => {
+                if (element == "UNREAD") {
                   isUnread = element.includes("UNREAD");
                 }
               });
@@ -156,13 +154,18 @@ const Dashboard = () => {
               const limitedText = limitText(combinedText, 27);
               const subjectPart = mail.gmail_subject;
               const restPart = limitedText.substring(subjectPart.length);
-              const gmailContentClass = `gmailcontent${isUnread ? " unread" : ""}`;
+              const gmailContentClass = `gmailcontent${
+                isUnread ? " unread" : ""
+              }`;
 
               return (
                 <div className={gmailContentClass} key={index}>
                   <div className="gmailcontenttext">
                     <p className="gmailcontentp">
-                      <span className="gmailcontentsubject"> {subjectPart} </span>
+                      <span className="gmailcontentsubject">
+                        {" "}
+                        {subjectPart}{" "}
+                      </span>
                       {restPart}
                     </p>
                     <p className="gmailcontentdate">
