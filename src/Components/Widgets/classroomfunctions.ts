@@ -40,13 +40,20 @@ export async function getAssignments(courseIds: string[], setAssignments) {
 
     // Sort assignments by due date
     flattenedAssignments.sort((a, b) => {
-      const dueDateA = a.coursework_dueDate;
-      const dueDateB = b.coursework_dueDate;
+      const dueDateA =
+        a.coursework_dueDate === "No Due Date" ? null : new Date(a.coursework_dueDate);
+      const dueDateB =
+        b.coursework_dueDate === "No Due Date" ? null : new Date(b.coursework_dueDate);
 
-      return dueDateA.localeCompare(dueDateB, undefined, {
-        numeric: true,
-        sensitivity: "base",
-      });
+      if (dueDateA === null && dueDateB === null) {
+        return 0;
+      } else if (dueDateA === null) {
+        return 1; 
+      } else if (dueDateB === null) {
+        return -1; 
+      }
+
+      return dueDateB - dueDateA;
     });
 
     setAssignments(flattenedAssignments);
@@ -70,61 +77,88 @@ export function fetchCourses(setClassroomInfo) {
     });
 }
 
-export async function getCourseWork(courseIds: string[], setGrades) {
-  const allGrades = [];
-  await Promise.all(
-    courseIds.map(async (courseId) => {
-      console.log(courseId)
-      gapi.client.classroom.courses.courseWork
-        .list({
-          courseId: courseId,
-        })
-        .then(function (response) {
-          
-          console.log(response.result);
-          const courseWorks = response.result.courseWork;
-          if (courseWorks && courseWorks.length > 0) {
-            courseWorks.forEach(function (courseWork) {
-              const courseWorkId: string = courseWork.id;
-              console.log(courseWorkId);
-              
-              getGrades(courseId, courseWorkId, setGrades, allGrades);
-            });
-          }
-        });
-    })
-  );
-}
-export async function getGrades(courseId: string, courseWorkId: string, setGrades, allGrades:object[]) {
-  
+export async function getGrades(courseIds: string[], setGrades) {
+  let start = Date.now();
   try {
-    const response = await gapi.client.classroom.courses.courseWork.studentSubmissions.list({
-      courseId: courseId,
-      courseWorkId: courseWorkId,
-      userId: 'me'
+    const allGrades = [];
+    await Promise.all(
+      courseIds.map(async (courseId) => {
+        const courseworkResponse =
+          await gapi.client.classroom.courses.courseWork.list({
+            courseId: courseId,
+          });
+        const coursework = courseworkResponse.result.courseWork;
+        for (const courseWork of coursework) {
+          const courseWorkId = courseWork.id;
+
+          // Step 5: Get student submissions for the current coursework.
+          const submissionsResponse =
+            await gapi.client.classroom.courses.courseWork.studentSubmissions.list(
+              {
+                courseId: courseId,
+                courseWorkId: courseWorkId,
+                userId: "me", // Fetch your own submissions.
+              }
+            );
+          const submissions =
+            submissionsResponse.result.studentSubmissions || [];
+          if (submissions.length != 0) {
+            const CourseInfo = courseWork;
+            const { dueDate, creationTime, title, maxPoints } = CourseInfo;
+            const formattedDueDate = dueDate
+              ? new Date(
+                  dueDate.year,
+                  dueDate.month - 1,
+                  dueDate.day
+                ).toLocaleDateString()
+              : "No Due Date";
+            const gradeInfo = {
+              assigned_grade: submissions.at(0)?.assignedGrade || "Not Graded",
+              max_grade: maxPoints,
+              course_name: title,
+              course_dueDate: formattedDueDate,
+              course_creationDate: creationTime,
+            };
+            console.log(gradeInfo);
+            allGrades.push(gradeInfo);
+          }
+        }
+      })
+    );
+    const flattenedGrades = allGrades.flat();
+
+    // ...
+
+    // Sort assignments by due date
+    flattenedGrades.sort((a, b) => {
+      const dueDateA =
+        a.course_dueDate === "No Due Date" ? null : new Date(a.course_dueDate);
+      const dueDateB =
+        b.course_dueDate === "No Due Date" ? null : new Date(b.course_dueDate);
+
+      if (dueDateA === null && dueDateB === null) {
+        return 0;
+      } else if (dueDateA === null) {
+        return 1; 
+      } else if (dueDateB === null) {
+        return -1; 
+      }
+
+      return dueDateB - dueDateA;
     });
 
-    const studentSubmissions = response.result.studentSubmissions || [];
-    
+    setGrades(flattenedGrades);
+    console.log(flattenedGrades);
 
-    studentSubmissions.forEach((submission) => {
-      console.log(submission);
+    // ...
 
-      // Add the entire submission object to the allGrades array
-      allGrades.push(submission);
-      console.log(allGrades)
-    });
-
-    // Set the grades in the state or perform any other necessary action
-    setGrades(allGrades);
-    console.log(allGrades)
-    return allGrades;
+    let timeTaken = Date.now() - start;
+    console.log("Total time taken : " + timeTaken + " milliseconds");
   } catch (error) {
     console.error("Error fetching student submissions:", error);
     return [];
   }
 }
-
 
 export async function getAnnouncementsForCourse(
   courseIds: string[],

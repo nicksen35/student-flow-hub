@@ -11,11 +11,9 @@ import timerImage from "../../assets/Timer.png";
 import {
   getAssignments,
   fetchCourses,
-  getCourseWork,
-  getGrades,
-  fetchWithCourseId,
   getAnnouncementsForCourse,
   getClassRoster,
+  getGrades,
 } from "./classroomfunctions";
 
 import { GetMail } from "./gmailfunctions";
@@ -60,7 +58,7 @@ const Dashboard = () => {
             getAnnouncementsForCourse(courseIds, setAnnouncements);
             break;
           case "Grades":
-            getCourseWork(courseIds, setCourseWork, setGrades);
+            getGrades(courseIds, setGrades);
             break;
           case "Teacher":
             getClassRoster(courseIds, getTeachers);
@@ -257,7 +255,16 @@ const Dashboard = () => {
                     );
                     break;
                   case classroomdropdownoptions[3]:
-                    //fetchWithCourseId("Grades");
+                    return(
+                      <>
+                      {grades.map((coursework, index) => (
+                        <p key={index} className="classroom-contentp">
+                          <b> {coursework.course_name} </b> Due Date: {coursework.course_dueDate} - {coursework.assigned_grade}/{coursework.max_grade} 
+                        </p>
+
+              ))}
+                      </>
+                    )
                     break;
                   case classroomdropdownoptions[4]:
                     return (
