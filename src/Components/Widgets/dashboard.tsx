@@ -8,6 +8,7 @@ import classroomImage from "../../assets/Google_Classroom_Logo.png";
 import projectsImage from "../../assets/Projects.png";
 import todoImage from "../../assets/ToDoList.png";
 import timerImage from "../../assets/Timer.png";
+import {GetCalendarsIds, GetEvents} from './calendarfunctions'
 import {
   getAssignments,
   fetchCourses,
@@ -103,6 +104,7 @@ const Dashboard = () => {
     WidgetID?: number;
   }
   const CalendarWidget: FC<WidgetProp> = (prop) => {
+    GetEvents()
     return (
       <>
         <div className="calendarwidget" onClick={prop.onClick}>
