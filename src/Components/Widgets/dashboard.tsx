@@ -153,12 +153,14 @@ const Dashboard = () => {
               const sender = mail.gmail_sender;
               const subject = mail.gmail_subject;
               const snippet = mail.gmail_snippet;
-              
+
               const combinedText = `${sender}: ${subject} - ${snippet}`;
               const limitedText = limitText(combinedText, 27);
-              
-              const gmailContentClass = `gmailcontent${isUnread ? " unread" : ""}`;
-              
+
+              const gmailContentClass = `gmailcontent${
+                isUnread ? " unread" : ""
+              }`;
+
               return (
                 <div className={gmailContentClass} key={index}>
                   <div className="gmailcontenttext">
@@ -174,7 +176,6 @@ const Dashboard = () => {
                   </div>
                 </div>
               );
-                      
             })}
           </div>
         </div>
@@ -255,16 +256,17 @@ const Dashboard = () => {
                     );
                     break;
                   case classroomdropdownoptions[3]:
-                    return(
+                    return (
                       <>
-                      {grades.map((coursework, index) => (
-                        <p key={index} className="classroom-contentp">
-                          <b> {coursework.course_name} </b> Due Date: {coursework.course_dueDate} - {coursework.assigned_grade}/{coursework.max_grade} 
-                        </p>
-
-              ))}
+                        {grades.map((coursework, index) => (
+                          <p key={index} className="classroom-contentp">
+                            <b> {coursework.course_name} </b> Due Date:{" "}
+                            {coursework.course_dueDate} -{" "}
+                            {coursework.assigned_grade}/{coursework.max_grade}
+                          </p>
+                        ))}
                       </>
-                    )
+                    );
                     break;
                   case classroomdropdownoptions[4]:
                     return (
