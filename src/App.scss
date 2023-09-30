@@ -941,7 +941,23 @@ h1 {
 .gmailcontent.unread {
   background-color: white;
 }
-.gmailcontent.unread .gmailcontentp .gmailcontentsubject {
+.gmailcontent.unread .gmailcontentp .gmailcontentsubject,.gmailcontent.unread .gmailcontentp .gmailcontentsender {
   font-weight: bold;
   margin: 0;
+}
+.gmailcontent {
+  border: 1px solid #ddd;
+  padding: 10px;
+  transition: background-color 0.1s linear, transform 0.1s linear; 
+}
+
+.gmailcontent:hover {
+  transform: scale(1.03); 
+  cursor: pointer;
+  box-shadow: 5px;
+}
+
+/* Additional styles for unread emails on hover */
+.gmailcontent.unread:hover {
+  background-color: #e0e0e0;
 }

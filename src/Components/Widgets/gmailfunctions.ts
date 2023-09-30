@@ -6,7 +6,7 @@ export async function GetMail(setMail, maxResults) {
   // List the first 25 email messages
   const listResponse = await gapi.client.gmail.users.messages.list({
     userId: "me",
-    maxResults: 25, // Add this parameter to limit the number of results
+    maxResults: maxResults, // Add this parameter to limit the number of results
     // You can add other query parameters to filter messages if needed
     // For example, to filter by label, use: q: "label:inbox"
   });
@@ -24,23 +24,26 @@ export async function GetMail(setMail, maxResults) {
       userId: "me",
       id: messageId,
     });
-
+    console.log(messageResponse)
     const { id, internalDate, labelIds, snippet } = messageResponse.result;
     const date = new Date(Number(internalDate));
     const formattedDate = date.toLocaleString(); // Use appropriate options for formatting
     // Access the subject (header title) from the headers
     const headers = messageResponse.result.payload.headers;
     let subject = "";
-
+    let sender = "";
     for (const header of headers) {
       if (header.name === "Subject") {
         subject = header.value;
-        break; // Found the subject, no need to continue searching
+      } else if (header.name === "From") {
+        sender = header.value;
+        sender = header.value.replace(/<.*>/, "").trim();
       }
     }
 
     return {
       gmail_subject: subject,
+      gmail_sender: sender,
       gmail_id: id,
       gmail_date: formattedDate,
       gmail_labelsId: labelIds,

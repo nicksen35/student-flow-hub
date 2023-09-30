@@ -27,6 +27,8 @@ const Dashboard = () => {
   const [teachers, getTeachers] = useState([]);
   const [mail, setMail] = useState([]);
   const [fetchMail, setFetchMail] = useState(true);
+  const [courseWork, setCourseWork] = useState();
+  const [grades, setGrades] = useState([]);
   const classroomdropdownoptions = [
     "Assignments",
     "Classes",
@@ -58,7 +60,7 @@ const Dashboard = () => {
             getAnnouncementsForCourse(courseIds, setAnnouncements);
             break;
           case "Grades":
-            getCourseWork(courseIds);
+            getCourseWork(courseIds, setCourseWork, setGrades);
             break;
           case "Teacher":
             getClassRoster(courseIds, getTeachers);
@@ -150,23 +152,22 @@ const Dashboard = () => {
                   isUnread = element.includes("UNREAD");
                 }
               });
-              const combinedText = `${mail.gmail_subject} - ${mail.gmail_snippet}`;
+              const sender = mail.gmail_sender;
+              const subject = mail.gmail_subject;
+              const snippet = mail.gmail_snippet;
+              
+              const combinedText = `${sender}: ${subject} - ${snippet}`;
               const limitedText = limitText(combinedText, 27);
-              const subjectPart = mail.gmail_subject;
-              const restPart = limitedText.substring(subjectPart.length);
-              const gmailContentClass = `gmailcontent${
-                isUnread ? " unread" : ""
-              }`;
-
+              
+              const gmailContentClass = `gmailcontent${isUnread ? " unread" : ""}`;
+              
               return (
                 <div className={gmailContentClass} key={index}>
                   <div className="gmailcontenttext">
                     <p className="gmailcontentp">
-                      <span className="gmailcontentsubject">
-                        {" "}
-                        {subjectPart}{" "}
-                      </span>
-                      {restPart}
+                      <span className="gmailcontentsender">{sender}: </span>
+                      <span className="gmailcontentsubject">{subject} - </span>
+                      {limitedText.substring(sender.length + subject.length)}
                     </p>
                     <p className="gmailcontentdate">
                       {" "}
@@ -175,12 +176,14 @@ const Dashboard = () => {
                   </div>
                 </div>
               );
+                      
             })}
           </div>
         </div>
       </>
     );
   };
+
   const ClassroomWidget: FC<WidgetProp> = (prop) => {
     const handleHeaderChange = (event: number) => {
       setCRWidget((prevState) => ({
@@ -254,7 +257,7 @@ const Dashboard = () => {
                     );
                     break;
                   case classroomdropdownoptions[3]:
-                    fetchWithCourseId("Grades");
+                    //fetchWithCourseId("Grades");
                     break;
                   case classroomdropdownoptions[4]:
                     return (
