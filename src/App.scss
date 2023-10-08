@@ -6,13 +6,13 @@ $calendar-blue: #1967d2;
 $gmail-orange: #fbbc05;
 $top-widget-height: 40vh;
 $onepx-solid: 1px solid black;
-$gmail-blue:#3e65cf;
+$gmail-blue: #3e65cf;
 $gmail-red: #c71610;
-$calendar-yellow: #FBBC04;
-$calendar-green: #34A853;
+$calendar-yellow: #fbbc04;
+$calendar-green: #34a853;
 $white: #fff;
 $google-blue: #4285f4;
-$button-active-blue: #1669F2;
+$button-active-blue: #1669f2;
 * {
   font-family: $font;
 }
@@ -86,9 +86,9 @@ $button-active-blue: #1669F2;
   width: 50%;
   margin: auto;
 }
-.headertitle:hover, .homeicon:hover
-{
-  cursor:pointer
+.headertitle:hover,
+.homeicon:hover {
+  cursor: pointer;
 }
 .homeicon {
   width: 60px;
@@ -146,13 +146,19 @@ $button-active-blue: #1669F2;
   border: $onepx-solid;
   border-top: 0;
   flex: 1;
+  overflow-y: hidden;
+  white-space: wrap;
+  text-overflow: ellipsis;
 }
 .gmailwidget {
   height: $top-widget-height;
   border: $onepx-solid;
   border-top: 0;
   flex: 0.8;
-  height: 80vh;
+  height: 81.8vh;
+}
+.gmailwidget::-webkit-scrollbar {
+  display: none;
 }
 .bottomwidgetcontainer {
   display: grid;
@@ -230,7 +236,7 @@ h1 {
 /* Change color of dropdown links on hover */
 .dropdown-contentclassroom a:hover {
   background-color: black;
-  color:white
+  color: white;
 }
 
 /* Show the dropdown menu on hover */
@@ -257,7 +263,7 @@ h1 {
   font-size: 25px;
   font-weight: bold;
   color: white;
-  margin-right:8%;
+  margin-right: 8%;
 }
 .classroomboxcontainer {
   display: flex;
@@ -308,18 +314,15 @@ h1 {
   width: 51vh;
 }
 
-
-.classroomsubtitle
-{
-  display:flex;
+.classroomsubtitle {
+  display: flex;
 }
 
-.widget-link
-{
-  margin:0;
+.widget-link {
+  margin: 0;
   text-decoration: none;
-  color:#000;
-  padding:0;
+  color: #000;
+  padding: 0;
 }
 .gmaildropdownbtn {
   background-color: #04aa6d;
@@ -356,7 +359,7 @@ h1 {
 /* Change color of dropdown links on hover */
 .dropdown-contentgmail a:hover {
   background-color: black;
-  color:white
+  color: white;
 }
 
 /* Show the dropdown menu on hover */
@@ -383,7 +386,7 @@ h1 {
   font-size: 25px;
   font-weight: bold;
   color: white;
-  margin-right:8%;
+  margin-right: 8%;
 }
 .gmailboxcontainer {
   display: flex;
@@ -424,232 +427,195 @@ h1 {
   padding: 3px;
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
-  margin:0;
+  margin: 0;
 }
-.gmailsubtitle
-{
-  display:flex;
+.gmailsubtitle {
+  display: flex;
 }
 
-.widget-link
-{
-  margin:0;
+.widget-link {
+  margin: 0;
   text-decoration: none;
-  color:#000;
-  padding:0;
+  color: #000;
+  padding: 0;
 }
-.timersidebar
-{
-  border:$onepx-solid;
-  width:20%;
-  height:83vh;
+.timersidebar {
+  border: $onepx-solid;
+  width: 20%;
+  height: 83vh;
   background-color: white;
-  margin-top:-5%;
-  margin-left:-.6%;
-  margin-right:2%;
+  margin-top: -5%;
+  margin-left: -0.6%;
+  margin-right: 2%;
 }
-.timersidebaritems
-{
-  list-style:none;
-  margin:0;
-  padding-bottom:5%;
-  padding-top:5%;
-  color:#00000050;
-  margin-top:5%;
-  display:flex;
-  align-items:center;
+.timersidebaritems {
+  list-style: none;
+  margin: 0;
+  padding-bottom: 5%;
+  padding-top: 5%;
+  color: #00000050;
+  margin-top: 5%;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size:large;
-
+  font-size: large;
 }
-.timersidebaritems.active
-{
-  color:black;
-  font-size:larger;
-  font-weight:bold;
+.timersidebaritems.active {
+  color: black;
+  font-size: larger;
+  font-weight: bold;
 }
-.timersidebaritems:hover
-{
-  color:black;
-  cursor:pointer;
-  font-size:larger;
-  font-weight:bold;
+.timersidebaritems:hover {
+  color: black;
+  cursor: pointer;
+  font-size: larger;
+  font-weight: bold;
 }
-.timersidebarheader
-{
-  margin-top:5%;
-  text-indent:5%;
+.timersidebarheader {
+  margin-top: 5%;
+  text-indent: 5%;
 }
-.sidebarimg
-{
-  width:50px;
+.sidebarimg {
+  width: 50px;
 }
-.sidebartext
-{
-  margin:0;
-  margin-right:30%;
-  margin-left:5%;
+.sidebartext {
+  margin: 0;
+  margin-right: 30%;
+  margin-left: 5%;
 }
-.timerwidgetcontainer
-{
-  display:flex;
+.timerwidgetcontainer {
+  display: flex;
 }
-.subpagewidget
-{
-  border:$onepx-solid;
-  width:75%;
-  margin-top:2%;
-  display:flex;
+.subpagewidget {
+  border: $onepx-solid;
+  width: 75%;
+  margin-top: 2%;
+  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
-.timerpagelist
-{
-  list-style:none;
+.timerpagelist {
+  list-style: none;
   display: flex;
   justify-content: center;
 }
-.timerbutton
-{
+.timerbutton {
   border-radius: 10px;
-  border:none;
-  width:100px;
-  height:50px;
-  text-align:center;
+  border: none;
+  width: 100px;
+  height: 50px;
+  text-align: center;
   background-color: $gmail-blue;
-  color:white;
+  color: white;
   font-weight: bold;
 }
-.timerbuttons
-{
-  display:flex;
-  margin-right:10%;
-  margin-top:5%;
+.timerbuttons {
+  display: flex;
+  margin-right: 10%;
+  margin-top: 5%;
 }
-.timer
-{
-  margin-top:1%;
+.timer {
+  margin-top: 1%;
 }
 
-
-.todosidebar
-{
-  border:$onepx-solid;
-  width:20%;
-  height:83vh;
+.todosidebar {
+  border: $onepx-solid;
+  width: 20%;
+  height: 83vh;
   background-color: white;
-  margin-top:-5%;
-  margin-left:-.6%;
-  margin-right:2%;
+  margin-top: -5%;
+  margin-left: -0.6%;
+  margin-right: 2%;
 }
-.todosidebaritems
-{
-  list-style:none;
-  margin:0;
-  padding-bottom:5%;
-  padding-top:5%;
-  color:#00000050;
-  margin-top:5%;
-  display:flex;
-  align-items:center;
+.todosidebaritems {
+  list-style: none;
+  margin: 0;
+  padding-bottom: 5%;
+  padding-top: 5%;
+  color: #00000050;
+  margin-top: 5%;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size:large;
-
+  font-size: large;
 }
-.todosidebaritems.active
-{
-  color:black;
-  font-size:larger;
-  font-weight:bold;
+.todosidebaritems.active {
+  color: black;
+  font-size: larger;
+  font-weight: bold;
 }
-.todosidebaritems:hover
-{
-  color:black;
-  cursor:pointer;
-  font-size:larger;
-  font-weight:bold;
+.todosidebaritems:hover {
+  color: black;
+  cursor: pointer;
+  font-size: larger;
+  font-weight: bold;
 }
-.todosidebarheader
-{
-  margin-top:5%;
-  text-indent:5%;
+.todosidebarheader {
+  margin-top: 5%;
+  text-indent: 5%;
 }
-.sidebartext
-{
-  margin:0;
-  margin-right:30%;
-  margin-left:5%;
+.sidebartext {
+  margin: 0;
+  margin-right: 30%;
+  margin-left: 5%;
 }
-.todowidgetcontainer
-{
-  display:flex;
+.todowidgetcontainer {
+  display: flex;
 }
-.todotitle
-{
-  text-align:center;
-  margin-top:1%;
+.todotitle {
+  text-align: center;
+  margin-top: 1%;
 }
 
-
-.projectssidebar
-{
-  border:$onepx-solid;
-  width:20%;
-  height:83vh;
+.projectssidebar {
+  border: $onepx-solid;
+  width: 20%;
+  height: 83vh;
   background-color: white;
-  margin-top:-5%;
-  margin-left:-.6%;
-  margin-right:2%;
+  margin-top: -5%;
+  margin-left: -0.6%;
+  margin-right: 2%;
 }
-.projectssidebaritems
-{
-  list-style:none;
-  margin:0;
-  padding-bottom:5%;
-  padding-top:5%;
-  color:#00000050;
-  margin-top:5%;
-  display:flex;
-  align-items:center;
+.projectssidebaritems {
+  list-style: none;
+  margin: 0;
+  padding-bottom: 5%;
+  padding-top: 5%;
+  color: #00000050;
+  margin-top: 5%;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size:large;
-
+  font-size: large;
 }
-.projectssidebaritems.active
-{
-  color:black;
-  font-size:larger;
-  font-weight:bold;
+.projectssidebaritems.active {
+  color: black;
+  font-size: larger;
+  font-weight: bold;
 }
-.projectssidebaritems:hover
-{
-  color:black;
-  cursor:pointer;
-  font-size:larger;
-  font-weight:bold;
+.projectssidebaritems:hover {
+  color: black;
+  cursor: pointer;
+  font-size: larger;
+  font-weight: bold;
 }
-.projectssidebarheader
-{
-  margin-top:5%;
-  text-indent:5%;
+.projectssidebarheader {
+  margin-top: 5%;
+  text-indent: 5%;
 }
-.projectsbartext
-{
-  margin:0;
-  margin-right:30%;
-  margin-left:5%;
+.projectsbartext {
+  margin: 0;
+  margin-right: 30%;
+  margin-left: 5%;
 }
-.projectswidgetcontainer
-{
-  display:flex;
+.projectswidgetcontainer {
+  display: flex;
 }
-.projectstitle
-{
-  text-align:center;
-  margin-top:1%;
+.projectstitle {
+  text-align: center;
+  margin-top: 1%;
 }
-
 
 .calendardropdownbtn {
   color: white;
@@ -685,7 +651,7 @@ h1 {
 /* Change color of dropdown links on hover */
 .dropdown-contentcalendar a:hover {
   background-color: black;
-  color:white
+  color: white;
 }
 
 /* Show the dropdown menu on hover */
@@ -752,18 +718,15 @@ h1 {
   width: 51vh;
 }
 
-
-.calendarsubtitle
-{
-  display:flex;
+.calendarsubtitle {
+  display: flex;
 }
 
-.widget-link
-{
-  margin:0;
+.widget-link {
+  margin: 0;
   text-decoration: none;
-  color:#000;
-  padding:0;
+  color: #000;
+  padding: 0;
 }
 
 .google-btn {
@@ -771,7 +734,7 @@ h1 {
   height: 42px;
   background-color: $google-blue;
   border-radius: 2px;
-  box-shadow: 0 3px 4px 0 rgba(0,0,0,.25);
+  box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.25);
   .google-icon-wrapper {
     position: absolute;
     margin-top: 1px;
@@ -795,7 +758,7 @@ h1 {
     font-size: 14px;
     letter-spacing: 0.2px;
     font-family: "Roboto";
-    text-indent:5px;
+    text-indent: 5px;
   }
   &:hover {
     box-shadow: 0 0 6px $google-blue;
@@ -806,67 +769,70 @@ h1 {
 }
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:500);
-.googlebuttoncontainer
-{
+.googlebuttoncontainer {
   flex-direction: column;
-
 }
-.signintitle
-{
-  align-items:center;
+.signintitle {
+  align-items: center;
   flex-direction: column;
   align-items: center;
 }
-#signinsubtitle
-{
-  font-weight:lighter;
+#signinsubtitle {
+  font-weight: lighter;
 }
-.signinpagecontainer
-{
-  display:flex;
+.signinpagecontainer {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow:hidden;
-  
-  padding-top:2%; 
+  overflow: hidden;
+
+  padding-top: 2%;
 }
 @keyframes popout {
-  from{transform:scale(0)}
-  80%{transform:scale(1.2)}
-  to{transform:scale(1)}
+  from {
+    transform: scale(0);
+  }
+  80% {
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 @-webkit-keyframes popout {
-  from{-webkit-transform:scale(0)}
-  80%{-webkit-transform:scale(1.2)}
-  to{-webkit-transform:scale(1)}
+  from {
+    -webkit-transform: scale(0);
+  }
+  80% {
+    -webkit-transform: scale(1.2);
+  }
+  to {
+    -webkit-transform: scale(1);
+  }
 }
-.signinpage
-{
+.signinpage {
   animation: popout 1s ease;
   box-shadow: 5px 5px 15px;
   -webkit-animation: popout 1s ease;
-  display:flex;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  border:$onepx-solid;
-  width:35%;
-  padding-bottom:5%;
-  height:75vh;
+  border: $onepx-solid;
+  width: 35%;
+  padding-bottom: 5%;
+  height: 75vh;
   background-color: white;
-  border-radius:10px;
+  border-radius: 10px;
 }
-.signinbody
-{
-  
-  margin:0;
-  margin-top:-1%;
-  padding:0;
-  height:100%;
-  width:100%;
-  margin-left:-1%;
-
+.signinbody {
+  margin: 0;
+  margin-top: -1%;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  margin-left: -1%;
 }
 
 .dsbclassroom-content {
@@ -874,10 +840,10 @@ h1 {
   position: absolute;
   background-color: #f9f9f9;
   min-width: 505px;
-  border-radius:5px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  left:5%;
-  top:85%;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  left: 5%;
+  top: 65%;
   z-index: 1;
 }
 .dsbclassroom-content a {
@@ -887,7 +853,9 @@ h1 {
   display: block;
 }
 
-.dsbclassroom-content a:hover {background-color: #f1f1f1}
+.dsbclassroom-content a:hover {
+  background-color: #f1f1f1;
+}
 
 .dsb-classroomdropdown:hover .dsbclassroom-content {
   display: block;
@@ -897,9 +865,7 @@ h1 {
 .dsb-classroomdropdown {
   position: relative;
   display: inline-block;
-  display:flex;
-  
-  
+  display: flex;
 }
 .dashboarddown {
   border: solid black;
@@ -908,29 +874,90 @@ h1 {
   padding: 3px;
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
-  margin:0;
+  margin: 0;
 }
-.dsb-subtitle
-{
-  display:flex;
-  border-bottom:$onepx-solid;
-  width:100%;
+.dsb-subtitle {
+  display: flex;
+  border-bottom: $onepx-solid;
+  width: 100%;
   justify-content: center;
   align-items: center;
-  
 }
-.dsb-widgetname
-{
-  text-align:left !important;
+.dsb-widgetname {
+  text-align: left !important;
   background-color: white;
-  height:75%;
-  margin-bottom:2%;
-  margin-top:2%;
-  padding-bottom:2.5%;
-  padding-top:2.5%;
-  border-radius:5px;
-  font-size:larger;
+  height: 75%;
+  margin-bottom: 2%;
+  margin-top: 2%;
+  padding-bottom: 2.5%;
+  padding-top: 2.5%;
+  border-radius: 5px;
+  font-size: larger;
   border: $onepx-solid;
-  width:90%;
+  width: 90%;
   text-indent: 2%;
+}
+.classroom-contentp {
+  margin: 5px;
+  padding-left: 2%;
+}
+.classroomcontent {
+  text-overflow: ellipsis;
+  height: 60%;
+  overflow-y: scroll;
+}
+.classroomcontent::-webkit-scrollbar {
+  display: none;
+}
+.maildashboardcontent {
+  text-overflow: ellipsis;
+  height: 100%;
+  overflow-y: scroll; /* Use scroll to allow scrolling */
+  min-height: 60vh;
+  max-height: 74vh; /* Set a maximum height to avoid excessive scrolling */
+}
+.maildashboardcontent::-webkit-scrollbar {
+  display: none;
+}
+.gmailcontentp {
+  width: 95%;
+  margin: 0;
+}
+.maildashboardtitle {
+  font-size: 25px;
+  margin: 2%;
+}
+.gmailcontent {
+  padding-bottom: 2%;
+  border-top: $onepx-solid;
+  background-color: #f5f5f5;
+  font-weight: none;
+}
+
+.gmailcontenttext {
+  margin-left: 2%;
+  margin-top: 2%;
+}
+.gmailcontent.unread {
+  background-color: white;
+}
+.gmailcontent.unread .gmailcontentp .gmailcontentsubject,.gmailcontent.unread .gmailcontentp .gmailcontentsender {
+  font-weight: bold;
+  margin: 0;
+}
+.gmailcontent {
+  border: 1px solid #ddd;
+  padding: 10px;
+  transition: background-color 0.1s linear, transform 0.1s linear; 
+}
+
+.gmailcontent:hover {
+  transform: scale(1.03); 
+  cursor: pointer;
+  box-shadow: 5px;
+}
+
+/* Additional styles for unread emails on hover */
+.gmailcontent.unread:hover {
+  background-color: #e0e0e0;
 }

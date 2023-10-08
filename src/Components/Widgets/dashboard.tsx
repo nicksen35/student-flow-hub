@@ -8,9 +8,26 @@ import classroomImage from "../../assets/Google_Classroom_Logo.png";
 import projectsImage from "../../assets/Projects.png";
 import todoImage from "../../assets/ToDoList.png";
 import timerImage from "../../assets/Timer.png";
+import {GetCalendarsIds, GetEvents} from './calendarfunctions'
+import {
+  getAssignments,
+  fetchCourses,
+  getAnnouncementsForCourse,
+  getClassRoster,
+  getGrades,
+} from "./classroomfunctions";
 
+import { GetMail } from "./gmailfunctions";
 const Dashboard = () => {
   const [classroomInfo, setClassroomInfo] = useState([]);
+  const [user, setCurrentUser] = useState();
+  const [assignments, setAssignments] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [teachers, getTeachers] = useState([]);
+  const [mail, setMail] = useState([]);
+  const [fetchMail, setFetchMail] = useState(true);
+  const [courseWork, setCourseWork] = useState();
+  const [grades, setGrades] = useState([]);
   const classroomdropdownoptions = [
     "Assignments",
     "Classes",
@@ -21,122 +38,60 @@ const Dashboard = () => {
   const [CRWidget, setCRWidget] = useState({
     widget1: classroomdropdownoptions[0],
   });
-  function fetchCourses() {
-    gapi.client.classroom.courses
-      .list()
-      .then(function (response) {
-        console.log(response.result.courses);
-        setClassroomInfo(response.result.courses);
-      })
-      .catch(function (error) {
-        console.error("Error making Classroom API request:", error);
-      });
-  }
-  function getAssignments(courseId: string) {
-    gapi.client.classroom.courses.courseWork
-      .list({
-        courseId: courseId,
-      })
-      .then(function (response) {
-        console.log(response.result);
-      });
-  }
-  function getCourseWork(courseId: string) {
-    gapi.client.classroom.courses.courseWork
-      .list({
-        courseId: courseId,
-      })
-      .then(function (response) {
-        console.log(response.result);
-        const courseWorks = response.result.courseWork;
-        if (courseWorks && courseWorks.length > 0) {
-          courseWorks.forEach(function (courseWork) {
-            const courseWorkId: string = courseWork.id;
-            console.log(courseWorkId);
-            getGrades(courseId, courseWorkId);
-          });
-        }
-      });
-  }
-  function getGrades(courseId: string, courseWorkId: string) {
-    gapi.client.classroom.courses.courseWork.studentSubmissions
-      .list({
-        courseId: courseId,
-        courseWorkId: courseWorkId,
-      })
-      .then(function (response) {
-        console.log(response.result);
-      })
-      .catch(function (error) {
-        console.error("Error fetching student submissions:", error);
-      });
-  }
 
   function fetchWithCourseId(type: string) {
     gapi.client.classroom.courses.list().then(function (response) {
       const courses = response.result.courses;
 
       if (courses && courses.length > 0) {
+        const courseIds = [];
         courses.forEach(function (course) {
-          const courseId = course.id;
-          console.log("Fetching announcements for course with ID: " + courseId);
-          switch (type) {
-            case "Assignments":
-              getAssignments(courseId);
-              break;
-            case "Announcements":
-              getAnnouncementsForCourse(courseId);
-              break;
-            case "Grades":
-              getCourseWork(courseId);
-              break;
-            case "Teacher":
-              getClassRoster(courseId);
-          }
+          courseIds.push(course.id);
+          console.log(courseIds);
         });
+        console.log("Fetching announcements for course with ID: " + courseIds);
+        switch (type) {
+          case "Assignments":
+            console.log("calling this function mroe than once");
+            getAssignments(courseIds, setAssignments);
+            break;
+          case "Announcements":
+            getAnnouncementsForCourse(courseIds, setAnnouncements);
+            break;
+          case "Grades":
+            getGrades(courseIds, setGrades);
+            break;
+          case "Teacher":
+            getClassRoster(courseIds, getTeachers);
+        }
       } else {
         console.log("No courses found.");
       }
     });
   }
-  function getAnnouncementsForCourse(courseId: string) {
-    gapi.client.classroom.courses.announcements
-      .list({
-        courseId: courseId,
-      })
-      .then(function (response) {
-        console.log("Announcements for course with ID " + courseId + ":");
-        console.log(response.result);
-      });
-  }
-  function getClassRoster(courseId: string) {
-    gapi.client.classroom.courses.teachers
-      .list({
-        courseId: courseId,
-      })
-      .then(function (response) {
-        console.log(response.result);
-      });
-  }
   useEffect(() => {
-    switch (CRWidget.widget1) {
-      case classroomdropdownoptions[0]:
-        fetchWithCourseId("Assignments");
-        break;
-      case classroomdropdownoptions[1]:
-        console.log("hI MOM");
-        fetchCourses();
-        break;
-      case classroomdropdownoptions[2]:
-        fetchWithCourseId("Announcements");
-        break;
-      case classroomdropdownoptions[3]:
-        fetchWithCourseId("Grades");
-        break;
-      case classroomdropdownoptions[4]:
-        fetchWithCourseId("Teacher");
+    const authInstance = gapi.auth2.getAuthInstance();
+    setCurrentUser(authInstance.currentUser.get());
+    if (user) {
+      switch (CRWidget.widget1) {
+        case classroomdropdownoptions[0]:
+          fetchWithCourseId("Assignments");
+          break;
+        case classroomdropdownoptions[1]:
+          console.log("hI MOM");
+          fetchCourses(setClassroomInfo);
+          break;
+        case classroomdropdownoptions[2]:
+          fetchWithCourseId("Announcements");
+          break;
+        case classroomdropdownoptions[3]:
+          fetchWithCourseId("Grades");
+          break;
+        case classroomdropdownoptions[4]:
+          fetchWithCourseId("Teacher");
+      }
     }
-  }, [CRWidget.widget1]);
+  }, [CRWidget.widget1, user]);
 
   useEffect(() => {
     // This useEffect will run whenever the "classes" state changes
@@ -149,6 +104,7 @@ const Dashboard = () => {
     WidgetID?: number;
   }
   const CalendarWidget: FC<WidgetProp> = (prop) => {
+    GetEvents()
     return (
       <>
         <div className="calendarwidget" onClick={prop.onClick}>
@@ -163,18 +119,72 @@ const Dashboard = () => {
     );
   };
 
+  useEffect(() => {
+    if (fetchMail) {
+      GetMail(setMail, 25);
+      setFetchMail(false); // Set to false to avoid repeated calls
+    }
+    console.log("This function should not loop from UseEffect");
+  }, [fetchMail]); // Only depend on fetchMail, not mail
+
   const GmailWidget: FC<WidgetProp> = (prop) => {
+    function limitText(text: string, wordLimit: number) {
+      const words = text.split(" ");
+      if (words.length > wordLimit) {
+        return words.slice(0, wordLimit).join(" ") + "..."; // Add ellipsis if text is truncated
+      }
+      return text;
+    }
+
     return (
       <>
         <div className="gmailwidget" onClick={prop.onClick}>
           <div className="gmailwidgetheader">
             <WidgetTitle widgettitle="Gmail" imageSource={gmailImage} />
           </div>
-          <p> Hello</p>
+          <div className="maildashboardcontent">
+            <p className="maildashboardtitle"> Recent Mail: </p>
+
+            {mail.map((mail, index) => {
+              let isUnread = false;
+              mail.gmail_labelsId.forEach((element) => {
+                if (element == "UNREAD") {
+                  isUnread = element.includes("UNREAD");
+                }
+              });
+              const sender = mail.gmail_sender;
+              const subject = mail.gmail_subject;
+              const snippet = mail.gmail_snippet;
+
+              const combinedText = `${sender}: ${subject} - ${snippet}`;
+              const limitedText = limitText(combinedText, 27);
+
+              const gmailContentClass = `gmailcontent${
+                isUnread ? " unread" : ""
+              }`;
+
+              return (
+                <div className={gmailContentClass} key={index}>
+                  <div className="gmailcontenttext">
+                    <p className="gmailcontentp">
+                      <span className="gmailcontentsender">{sender}: </span>
+                      <span className="gmailcontentsubject">{subject} - </span>
+                      {limitedText.substring(sender.length + subject.length)}
+                    </p>
+                    <p className="gmailcontentdate">
+                      {" "}
+                      Sent At: {mail.gmail_date}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </>
     );
   };
+
   const ClassroomWidget: FC<WidgetProp> = (prop) => {
     const handleHeaderChange = (event: number) => {
       setCRWidget((prevState) => ({
@@ -184,40 +194,102 @@ const Dashboard = () => {
       console.log(event);
     };
     return (
-      <>
-        <div className="classroomwidget" >
-          <div className="classroomwidgetheader">
-            <WidgetTitle
-              widgettitle="Google Classroom"
-              imageSource={classroomImage}
-            />
+      <div className="classroomwidget">
+        <div className="classroomwidgetheader">
+          <WidgetTitle
+            widgettitle="Google Classroom"
+            imageSource={classroomImage}
+          />
+        </div>
+        <div className="dsb-classroomdropdown">
+          <div className="dsb-subtitle">
+            <button className="dsb-widgetname">
+              {prop.WidgetName} <i className="dashboarddown"></i>
+            </button>
           </div>
-          <div className="dsb-classroomdropdown">
-            <div className="dsb-subtitle">
-              <button className="dsb-widgetname">
-                {prop.WidgetName} <i className="dashboarddown"></i>
-              </button>
-            </div>
-            <div className="dsbclassroom-content">
-              {classroomdropdownoptions.map((options, index) => (
-                <>
-                  <a key={index} onClick={() => handleHeaderChange(index)}>
-                    {" "}
-                    {options}{" "}
-                  </a>
-                </>
-              ))}
-            </div>
-          </div>
-          <div className="classroomcontent" onClick={prop.onClick}>
-            {classroomInfo.map((course) => (
-              <div className="class" key={course.id}>
-                {course.name}
-              </div>
+          <div className="dsbclassroom-content">
+            {classroomdropdownoptions.map((options, index) => (
+              <a key={index} onClick={() => handleHeaderChange(index)}>
+                {" "}
+                {options}{" "}
+              </a>
             ))}
           </div>
         </div>
-      </>
+        <div className="classroomcontent" onClick={prop.onClick}>
+          <div className="content-wrapper">
+            {user &&
+              (() => {
+                switch (CRWidget.widget1) {
+                  case classroomdropdownoptions[0]:
+                    return (
+                      <>
+                        {assignments.map((assignment, index) => (
+                          <p key={index} className="classroom-contentp">
+                            {" "}
+                            <b> {assignment.coursework_title} </b> - Due Date:{" "}
+                            {assignment.coursework_dueDate}{" "}
+                          </p>
+                        ))}
+                      </>
+                    );
+                  case classroomdropdownoptions[1]:
+                    return (
+                      <>
+                        {classroomInfo.map((course) => (
+                          <div className="class" key={course.id}>
+                            {course.name}
+                          </div>
+                        ))}
+                      </>
+                    );
+                    break;
+                  case classroomdropdownoptions[2]:
+                    return (
+                      <>
+                        {announcements.map((announcement, index) => (
+                          <p key={index} className="classroom-contentp">
+                            {" "}
+                            <b> {announcement.announcement_text} </b> - Posted
+                            At {announcement.announcement_creationTime}
+                          </p>
+                        ))}
+                      </>
+                    );
+                    break;
+                  case classroomdropdownoptions[3]:
+                    return (
+                      <>
+                        {grades.map((coursework, index) => (
+                          <p key={index} className="classroom-contentp">
+                            <b> {coursework.course_name} </b> Due Date:{" "}
+                            {coursework.course_dueDate} -{" "}
+                            {coursework.assigned_grade}/{coursework.max_grade}
+                          </p>
+                        ))}
+                      </>
+                    );
+                    break;
+                  case classroomdropdownoptions[4]:
+                    return (
+                      <>
+                        {teachers.map((teachers, index) => (
+                          <p key={index} className="classroom-contentp">
+                            {" "}
+                            <b> {teachers.teacher_fullName} </b> - Class:{" "}
+                            {teachers.teacher_courseId}
+                          </p>
+                        ))}
+                      </>
+                    );
+                    break;
+                  default:
+                    break;
+                }
+              })()}
+          </div>
+        </div>
+      </div>
     );
   };
 
