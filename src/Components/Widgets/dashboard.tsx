@@ -185,7 +185,7 @@ const Dashboard = () => {
     };
     return (
       <>
-        <div className="classroomwidget">
+        <div className="classroomwidget" >
           <div className="classroomwidgetheader">
             <WidgetTitle
               widgettitle="Google Classroom"
