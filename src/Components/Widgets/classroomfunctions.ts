@@ -1,4 +1,4 @@
-export async function getAssignments(courseIds: string[], setAssignments) {
+export async function getAssignments(courseIds: string[], setAssignments, courses) {
   try {
     console.log("multiple function calls!!");
 
@@ -13,10 +13,16 @@ export async function getAssignments(courseIds: string[], setAssignments) {
           console.error(`Could not find assignments for course ${courseId}`);
           return [];
         }
-
         return courseWork.map((assignment) => {
-          const { title, dueDate, dueTime, description, alternateLink } =
-            assignment;
+          const {
+            title,
+            dueDate,
+            dueTime,
+            description,
+            alternateLink,
+            courseId,
+          } = assignment;
+        let courseName = courseId;
           const formattedDueDate = dueDate
             ? new Date(
                 dueDate.year,
@@ -24,12 +30,18 @@ export async function getAssignments(courseIds: string[], setAssignments) {
                 dueDate.day
               ).toLocaleDateString()
             : "No Due Date";
+          const matchedCourse =
+            courses.find((course) => course.id === courseId);
+          if (matchedCourse) {
+            courseName = matchedCourse.name;
+          }
           return {
             coursework_title: title || "No Title",
             coursework_dueDate: formattedDueDate,
             coursework_dueTime: dueTime || "No Due Time",
             coursework_description: description || "No Description",
             coursework_altlink: alternateLink || "No Alt Link",
+            coursework_courseName: courseName || "No Course Name",
           };
         });
       })
@@ -41,16 +53,20 @@ export async function getAssignments(courseIds: string[], setAssignments) {
     // Sort assignments by due date
     flattenedAssignments.sort((a, b) => {
       const dueDateA =
-        a.coursework_dueDate === "No Due Date" ? null : new Date(a.coursework_dueDate);
+        a.coursework_dueDate === "No Due Date"
+          ? null
+          : new Date(a.coursework_dueDate);
       const dueDateB =
-        b.coursework_dueDate === "No Due Date" ? null : new Date(b.coursework_dueDate);
+        b.coursework_dueDate === "No Due Date"
+          ? null
+          : new Date(b.coursework_dueDate);
 
       if (dueDateA === null && dueDateB === null) {
         return 0;
       } else if (dueDateA === null) {
-        return 1; 
+        return 1;
       } else if (dueDateB === null) {
-        return -1; 
+        return -1;
       }
 
       return dueDateB - dueDateA;
@@ -65,19 +81,18 @@ export async function getAssignments(courseIds: string[], setAssignments) {
   }
 }
 
-export function fetchCourses(setClassroomInfo) {
-  gapi.client.classroom.courses
-    .list()
-    .then(function (response) {
-      console.log(response.result.courses);
-      setClassroomInfo(response.result.courses);
-    })
-    .catch(function (error) {
-      console.error("Error making Classroom API request:", error);
-    });
+export async function fetchCourses() {
+  try {
+    const response = await gapi.client.classroom.courses.list();
+    console.log(response.result.courses);
+    return response.result.courses;
+  } catch (error) {
+    console.error("Error making Classroom API request:", error);
+    throw error; // You might want to handle the error further up in the call chain.
+  }
 }
 
-export async function getGrades(courseIds: string[], setGrades) {
+export async function getGrades(courseIds: string[], setGrades, courses) {
   let start = Date.now();
   try {
     const allGrades = [];
@@ -104,7 +119,13 @@ export async function getGrades(courseIds: string[], setGrades) {
             submissionsResponse.result.studentSubmissions || [];
           if (submissions.length != 0) {
             const CourseInfo = courseWork;
-            const { dueDate, creationTime, title, maxPoints } = CourseInfo;
+            const { dueDate, creationTime, title, maxPoints, courseId } = CourseInfo;
+            let courseName = courseId;
+            const matchedCourse =
+            courses.find((course) => course.id === courseId);
+          if (matchedCourse) {
+            courseName = matchedCourse.name;
+          }
             const formattedDueDate = dueDate
               ? new Date(
                   dueDate.year,
@@ -116,6 +137,7 @@ export async function getGrades(courseIds: string[], setGrades) {
               assigned_grade: submissions.at(0)?.assignedGrade || "Not Graded",
               max_grade: maxPoints,
               course_name: title,
+              course_courseName: courseName,
               course_dueDate: formattedDueDate,
               course_creationDate: creationTime,
             };
@@ -139,9 +161,9 @@ export async function getGrades(courseIds: string[], setGrades) {
       if (dueDateA === null && dueDateB === null) {
         return 0;
       } else if (dueDateA === null) {
-        return 1; 
+        return 1;
       } else if (dueDateB === null) {
-        return -1; 
+        return -1;
       }
 
       return dueDateB - dueDateA;
@@ -162,7 +184,8 @@ export async function getGrades(courseIds: string[], setGrades) {
 
 export async function getAnnouncementsForCourse(
   courseIds: string[],
-  setAnnouncements
+  setAnnouncements,
+  courses
 ) {
   console.log("multiple function calls!!");
   const allAnnouncements = [];
@@ -184,8 +207,16 @@ export async function getAnnouncementsForCourse(
               creationTime,
               updateTime,
             } = announcement;
+            let courseName = courseId;
+            const matchedCourse =
+              courses.find((course) => course.id === courseId) ||
+              courses.find((course) => course.id);
+            if (matchedCourse) {
+              courseName = matchedCourse.name;
+            }
             return {
               announcement_courseid: courseId,
+              announcement_coursename: courseName,
               announcement_creatorUserId: creatorUserId,
               announcement_text: text,
               announcement_alternateLink: alternateLink,
@@ -213,7 +244,11 @@ export async function getAnnouncementsForCourse(
   console.log(allAnnouncements);
 }
 
-export async function getClassRoster(courseIds: string[], getTeachers) {
+export async function getClassRoster(
+  courseIds: string[],
+  getTeachers,
+  courses
+) {
   const allTeachers = [];
   await Promise.all(
     courseIds.map(async (courseId) => {
@@ -222,13 +257,20 @@ export async function getClassRoster(courseIds: string[], getTeachers) {
       });
       if (response.result.teachers) {
         const courseTeachers = response.result.teachers.map((teacher) => {
-          console.log(teacher);
-          const { profile, courseId } = teacher;
+          let courseName = courseId;
+          const { profile, courseId: teacherCourseId } = teacher;
+          const matchedCourse = courses.find(
+            (course) => course.id === teacherCourseId
+          );
+          if (matchedCourse) {
+            courseName = matchedCourse.name;
+          }
           return {
             teacher_fullName: profile?.name?.fullName,
-            teacher_courseId: courseId,
+            teacher_courseId: courseName,
           };
         });
+        console.log(courseTeachers);
         allTeachers.push(...courseTeachers);
       }
     })

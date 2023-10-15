@@ -961,3 +961,47 @@ h1 {
 .gmailcontent.unread:hover {
   background-color: #e0e0e0;
 }
+.calendarEventsContent
+{
+  overflow-y:scroll;
+  height:220px;
+  flex:60%;
+  font-size:smaller;
+  overflow-x:hidden;
+  border-right:$onepx-solid;
+}
+.calendarEventsContent::-webkit-scrollbar
+{
+  display:none;
+}
+.eventsHeader
+{
+  margin:0;
+  margin-bottom:2%;
+  margin-left:2%;
+  margin-top:1%;
+  width:99.3%;
+}
+.calendarEventHeaderContainer
+{
+  border-bottom:$onepx-solid;
+  margin-bottom:1%;
+
+}
+.calendarContent
+{
+  display:flex;
+  columns: 2;
+}
+.miniCalendar
+{
+  flex:50%;
+  height:200px;
+}
+.eventContent
+{
+  margin-bottom:2%;
+  margin-left:2%;
+  font-weight:bold;
+  margin-right:2%;
+}

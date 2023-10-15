@@ -8,7 +8,9 @@ import classroomImage from "../../assets/Google_Classroom_Logo.png";
 import projectsImage from "../../assets/Projects.png";
 import todoImage from "../../assets/ToDoList.png";
 import timerImage from "../../assets/Timer.png";
-import {GetCalendarsIds, GetEvents} from './calendarfunctions'
+import { GetCalendarsIds, GetEvents } from "./calendarfunctions";
+import Calendar from 'react-calendar';
+import '../../ReactCalendar.scss'
 import {
   getAssignments,
   fetchCourses,
@@ -28,6 +30,8 @@ const Dashboard = () => {
   const [fetchMail, setFetchMail] = useState(true);
   const [courseWork, setCourseWork] = useState();
   const [grades, setGrades] = useState([]);
+  const [userevents, setEvents] = useState([]);
+  
   const classroomdropdownoptions = [
     "Assignments",
     "Classes",
@@ -53,16 +57,16 @@ const Dashboard = () => {
         switch (type) {
           case "Assignments":
             console.log("calling this function mroe than once");
-            getAssignments(courseIds, setAssignments);
+            getAssignments(courseIds, setAssignments, classroomInfo);
             break;
           case "Announcements":
-            getAnnouncementsForCourse(courseIds, setAnnouncements);
+            getAnnouncementsForCourse(courseIds, setAnnouncements, classroomInfo);
             break;
           case "Grades":
-            getGrades(courseIds, setGrades);
+            getGrades(courseIds, setGrades, classroomInfo);
             break;
           case "Teacher":
-            getClassRoster(courseIds, getTeachers);
+            getClassRoster(courseIds, getTeachers, classroomInfo);
         }
       } else {
         console.log("No courses found.");
@@ -79,7 +83,13 @@ const Dashboard = () => {
           break;
         case classroomdropdownoptions[1]:
           console.log("hI MOM");
-          fetchCourses(setClassroomInfo);
+          fetchCourses()
+          .then((courses) => {
+            setClassroomInfo(courses)
+          })
+          .catch((error) => {
+            console.error("Error parsing classroom info", error)
+          });
           break;
         case classroomdropdownoptions[2]:
           fetchWithCourseId("Announcements");
@@ -94,27 +104,57 @@ const Dashboard = () => {
   }, [CRWidget.widget1, user]);
 
   useEffect(() => {
-    // This useEffect will run whenever the "classes" state changes
-    console.log(classroomInfo);
-  }, [classroomInfo]);
+    fetchCourses()
+          .then((courses) => {
+            setClassroomInfo(courses)
+          })
+          .catch((error) => {
+            console.error("Error parsing classroom info", error)
+          });
+  }, []);
 
   interface WidgetProp {
     onClick: () => void;
     WidgetName?: string;
     WidgetID?: number;
   }
+
+  useEffect(() => {
+    GetEvents(setEvents, 200);
+  }, []);
   const CalendarWidget: FC<WidgetProp> = (prop) => {
-    GetEvents()
+    const [date, setDate] = useState(new Date())
     return (
       <>
-        <div className="calendarwidget" onClick={prop.onClick}>
+        <div className="calendarwidget" >
           <div className="calendarwidgetheader">
             <WidgetTitle
               widgettitle="Google Calendar"
               imageSource={calendarImage}
             />
           </div>
-        </div>
+          <div className="calendarContent">
+            <div className="calendarEventsContent">
+              <div className="calendarEventsContentText">
+                <div className="calendarEventHeaderContainer">
+                  <h2 className="eventsHeader"> Events </h2>
+                </div>
+                {userevents.map((userEvent) => {
+                  return (
+                    <div className="eventContent">
+                      {" "}
+                      {userEvent.event_summary}: {userEvent.event_starttime}{" "}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="miniCalendar">
+            <Calendar onChange={setDate} value={date}/>
+            </div>
+              
+              </div>
+            </div>
       </>
     );
   };
@@ -227,7 +267,8 @@ const Dashboard = () => {
                         {assignments.map((assignment, index) => (
                           <p key={index} className="classroom-contentp">
                             {" "}
-                            <b> {assignment.coursework_title} </b> - Due Date:{" "}
+                            <b> {assignment.coursework_courseName}: </b>
+                            {assignment.coursework_title} <br /> Due Date:{" "}
                             {assignment.coursework_dueDate}{" "}
                           </p>
                         ))}
@@ -250,7 +291,8 @@ const Dashboard = () => {
                         {announcements.map((announcement, index) => (
                           <p key={index} className="classroom-contentp">
                             {" "}
-                            <b> {announcement.announcement_text} </b> - Posted
+                            <b>{announcement.announcement_coursename}: </b>
+                             {announcement.announcement_text} <br/> Posted
                             At {announcement.announcement_creationTime}
                           </p>
                         ))}
@@ -262,6 +304,7 @@ const Dashboard = () => {
                       <>
                         {grades.map((coursework, index) => (
                           <p key={index} className="classroom-contentp">
+                            {coursework.course_courseName} - 
                             <b> {coursework.course_name} </b> Due Date:{" "}
                             {coursework.course_dueDate} -{" "}
                             {coursework.assigned_grade}/{coursework.max_grade}
