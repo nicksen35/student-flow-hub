@@ -180,6 +180,10 @@ $button-active-blue: #1669f2;
   height: 37.3vh;
 }
 
+.projectswidget
+{
+  margin-right:4%;
+}
 .widgetimage {
   height: 50px;
   margin-right: 1.5%;
@@ -1005,3 +1009,239 @@ h1 {
   font-weight:bold;
   margin-right:2%;
 }
+.recentTimer
+{
+  margin-top:5%;
+  width:100%;
+  text-align: center;
+}
+
+.timerTextContainer
+{
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  height:40%;
+}
+.timerText
+{
+  font-size:50px;
+}
+.timerbuttonsdsb
+{
+  text-align:center;
+}
+.starttimerbuttondsb, .endtimerbuttondsb
+{
+  background-color:$calendar-blue;
+  color:white;
+  border:0;
+  padding-left:5%;
+  padding-right:5%;
+  border-radius:4px;
+  padding-top:3%;
+  padding-bottom:3%;
+  font-size:larger;
+}
+.starttimerbuttondsb:hover, .endtimerbuttondsb:hover
+{
+  opacity:50%;
+}
+.starttimerbuttondsb
+{
+  margin-right:5%;
+}
+.projectdsb
+{
+  font-size:25px;
+  border-bottom:$onepx-solid;
+  padding-top:2%;
+  padding-bottom:2%;
+  font-weight:bolder;
+}
+.activeprojects
+{
+  border-bottom:$onepx-solid;
+  padding-bottom:3%;
+  padding-top:3%;
+}
+.dsb-tododropdown {
+  position: relative;
+  display: inline-block;
+}
+
+
+.dashboarddown {
+  margin-left: 5px; /* Adjust this as needed */
+}
+
+.dsbtodo-content {
+  display: none;
+  position: absolute;
+  background-color: hsl(0, 0%, 98%);
+  min-width: 265 px;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  left: 19%;
+  top: 75%;
+  z-index: 1;
+}
+
+.dsbtodo-content a {
+  color: black;
+  padding: 15px 16px;
+  text-decoration: none;
+  display: block;
+
+}
+
+.dsbtodo-content a:hover {
+  background-color: #f1f1f1;
+
+}
+
+.dsb-tododropdown:hover .dsbtodo-content {
+  display: block;
+  border: 1px solid; /* You need to specify the border color here */
+  position: absolute;
+}
+
+.dsb-todosubtitle
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width:430px;
+
+}
+.dsb-todowidgetname {
+  text-align: left !important;
+  background-color: white;
+  height: 75%;
+  margin-bottom: 2%;
+  margin-top: 2%;
+  padding-bottom: 2.5%;
+  padding-top: 2.5%;
+  border-radius: 5px;
+  font-size: larger;
+  border: $onepx-solid;
+  padding-right:200px;
+  text-indent: 2%;
+  text-wrap:nowrap;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlayTimer {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display:block;
+  background-color: white; 
+  border:$onepx-solid;
+  z-index: 2;
+  cursor: pointer;
+  box-shadow: 5px 5px 2px;
+}
+.overlayTimerContainer
+{
+  position: fixed;
+  top: 40%;
+  left: 59%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  text-align: center;
+  z-index: 1000;
+}
+.inputcontainertimer
+{
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.timerinput {
+  margin: 10px;
+  text-align: center;
+}
+
+.editTimerHeader
+{
+  background-color: $calendar-blue;
+  color:white;
+  padding-top:2%;
+  padding-bottom:2%; 
+  text-align:left;
+  text-indent:10px;
+  font-size:smaller;
+  display:flex;
+}
+.timersettings
+{
+  display:block;
+  list-style: none;
+  text-align:left;
+  margin-left:-4%;
+}
+.timerButtonList
+{
+
+  list-style:none;
+  text-align:left;
+  display:flex;
+}
+
+.deleteTimerButton
+{
+  float:left;
+  margin-left:-4%;
+}
+.saveTimerButton
+{
+  float:right;
+  margin-left:75%;
+}
+.timerButton
+{
+  color:white;
+  border: none;
+  border-radius:2px;
+  padding-top:5%;
+  padding-bottom:5%;
+  margin-bottom:5%;
+  font-weight:bold;
+  transition: 0.3s;
+}
+.timerButton:hover
+{
+  cursor:pointer;
+  transition: 0.3s;
+  background-color: black !important;
+
+}
+#savetimer
+{
+  background-color:$calendar-green;
+}
+#deleteTimer
+{
+  background-color:$gmail-red;
+}
+.close {
+  cursor: pointer;
+  position: absolute;
+  top: 9%;
+  right: 0%;
+  padding: 12px 16px;
+  font-size:50px;
+  color:#000;
+  opacity: 65%;
+  transform: translate(0%, -50%);
+}
+
+.close:hover {color: white;}

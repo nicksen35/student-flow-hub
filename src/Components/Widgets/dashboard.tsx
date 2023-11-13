@@ -9,8 +9,8 @@ import projectsImage from "../../assets/Projects.png";
 import todoImage from "../../assets/ToDoList.png";
 import timerImage from "../../assets/Timer.png";
 import { GetCalendarsIds, GetEvents } from "./calendarfunctions";
-import Calendar from 'react-calendar';
-import '../../ReactCalendar.scss'
+import Calendar from "react-calendar";
+import "../../ReactCalendar.scss";
 import {
   getAssignments,
   fetchCourses,
@@ -31,7 +31,7 @@ const Dashboard = () => {
   const [courseWork, setCourseWork] = useState();
   const [grades, setGrades] = useState([]);
   const [userevents, setEvents] = useState([]);
-  
+
   const classroomdropdownoptions = [
     "Assignments",
     "Classes",
@@ -39,6 +39,13 @@ const Dashboard = () => {
     "Grades",
     "Teachers",
   ];
+  const todolistdropdown = [
+    "Filter",
+    "Filler",
+  ]
+  const [TDWidget, setTDWidget] = useState({
+    widget1:todolistdropdown[1],
+  })
   const [CRWidget, setCRWidget] = useState({
     widget1: classroomdropdownoptions[0],
   });
@@ -60,7 +67,11 @@ const Dashboard = () => {
             getAssignments(courseIds, setAssignments, classroomInfo);
             break;
           case "Announcements":
-            getAnnouncementsForCourse(courseIds, setAnnouncements, classroomInfo);
+            getAnnouncementsForCourse(
+              courseIds,
+              setAnnouncements,
+              classroomInfo
+            );
             break;
           case "Grades":
             getGrades(courseIds, setGrades, classroomInfo);
@@ -82,14 +93,13 @@ const Dashboard = () => {
           fetchWithCourseId("Assignments");
           break;
         case classroomdropdownoptions[1]:
-          console.log("hI MOM");
           fetchCourses()
-          .then((courses) => {
-            setClassroomInfo(courses)
-          })
-          .catch((error) => {
-            console.error("Error parsing classroom info", error)
-          });
+            .then((courses) => {
+              setClassroomInfo(courses);
+            })
+            .catch((error) => {
+              console.error("Error parsing classroom info", error);
+            });
           break;
         case classroomdropdownoptions[2]:
           fetchWithCourseId("Announcements");
@@ -105,12 +115,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchCourses()
-          .then((courses) => {
-            setClassroomInfo(courses)
-          })
-          .catch((error) => {
-            console.error("Error parsing classroom info", error)
-          });
+      .then((courses) => {
+        setClassroomInfo(courses);
+      })
+      .catch((error) => {
+        console.error("Error parsing classroom info", error);
+      });
   }, []);
 
   interface WidgetProp {
@@ -123,10 +133,10 @@ const Dashboard = () => {
     GetEvents(setEvents, 200);
   }, []);
   const CalendarWidget: FC<WidgetProp> = (prop) => {
-    const [date, setDate] = useState(new Date())
+    const [date, setDate] = useState(new Date());
     return (
       <>
-        <div className="calendarwidget" >
+        <div className="calendarwidget">
           <div className="calendarwidgetheader">
             <WidgetTitle
               widgettitle="Google Calendar"
@@ -150,11 +160,10 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="miniCalendar">
-            <Calendar onChange={setDate} value={date}/>
+              <Calendar onChange={setDate} value={date} />
             </div>
-              
-              </div>
-            </div>
+          </div>
+        </div>
       </>
     );
   };
@@ -292,8 +301,8 @@ const Dashboard = () => {
                           <p key={index} className="classroom-contentp">
                             {" "}
                             <b>{announcement.announcement_coursename}: </b>
-                             {announcement.announcement_text} <br/> Posted
-                            At {announcement.announcement_creationTime}
+                            {announcement.announcement_text} <br /> Posted At{" "}
+                            {announcement.announcement_creationTime}
                           </p>
                         ))}
                       </>
@@ -304,7 +313,7 @@ const Dashboard = () => {
                       <>
                         {grades.map((coursework, index) => (
                           <p key={index} className="classroom-contentp">
-                            {coursework.course_courseName} - 
+                            {coursework.course_courseName} -
                             <b> {coursework.course_name} </b> Due Date:{" "}
                             {coursework.course_dueDate} -{" "}
                             {coursework.assigned_grade}/{coursework.max_grade}
@@ -337,11 +346,26 @@ const Dashboard = () => {
   };
 
   const ProjectsWidget: FC<WidgetProp> = (prop) => {
+    const ProjectsContent:Array = ["Example Project 1", "Example Project 2", "Example Project 3"]
     return (
       <>
         <div className="projectswidget" onClick={prop.onClick}>
           <div className="projectswidgetheader">
             <WidgetTitle widgettitle="Projects" imageSource={projectsImage} />
+          </div>
+          <div className="projectcontent"> 
+          <div className="projectstitle">
+            <h1 className="activeprojects"> Active Projects: </h1> 
+            <div className="projects">
+              {ProjectsContent.map((projects) => {
+                return(
+                  <div className="projectdsb"> {projects} </div>
+                )
+                
+              })}
+
+            </div>
+          </div>
           </div>
         </div>
       </>
@@ -349,12 +373,37 @@ const Dashboard = () => {
   };
 
   const ToDoWidget: FC<WidgetProp> = (prop) => {
+    const TodoContent:Array = ["Example Project 1", "Example Project 2", "Example Project 3"]
+    const handleHeaderChange = (event: number) => {
+      setCRWidget((prevState) => ({
+        ...prevState,
+        [`widget${prop.WidgetID}`]: todolistdropdown[event],
+      }));
+      console.log(event);
+    };
     return (
       <>
         <div className="todowidget" onClick={prop.onClick}>
           <div className="todowidgetheader">
             <WidgetTitle widgettitle="To-Do List" imageSource={todoImage} />
           </div>
+          <div className="dsb-tododropdown">
+          <div className="dsb-todosubtitle">
+            <button className="dsb-todowidgetname">
+              {prop.WidgetName} <i className="dashboarddown"></i>
+            </button>
+          </div>
+          <div className="dsbtodo-content">
+            {todolistdropdown.map((options, index) => (
+              <a key={index} onClick={() => handleHeaderChange(index)}>
+                {options}
+              </a>
+            ))}
+          </div>
+          <div className="todoitems">
+             
+          </div>
+        </div>
         </div>
       </>
     );
@@ -365,6 +414,16 @@ const Dashboard = () => {
         <div className="timerwidget" onClick={prop.onClick}>
           <div className="timerwidgetheader">
             <WidgetTitle widgettitle="Timer" imageSource={timerImage} />
+          </div>
+          <div className="recentTimer">
+            <h1 className="recentTimertext"> Recent Timer </h1>
+          </div>
+          <div className="timerTextContainer">
+            <h1 className="timerText"> 30:00 </h1>
+          </div>
+          <div className="timerbuttonsdsb">
+            <button className="starttimerbuttondsb"> Start </button>
+            <button className="endtimerbuttondsb"> End </button>
           </div>
         </div>
       </>
@@ -385,7 +444,7 @@ const Dashboard = () => {
         </div>
         <div className="bottomwidgetcontainer">
           <TimerWidget onClick={() => navigate("/timer/Timer")} />
-          <ToDoWidget onClick={() => navigate("/todo/Home")} />
+          <ToDoWidget onClick={() => navigate("/todo/Home")} WidgetName={TDWidget.widget1} WidgetID={1} />
           <ProjectsWidget onClick={() => navigate("/projects/Home")} />
         </div>
       </div>

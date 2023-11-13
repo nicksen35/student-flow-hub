@@ -22,7 +22,7 @@ export async function getAssignments(courseIds: string[], setAssignments, course
             alternateLink,
             courseId,
           } = assignment;
-        let courseName = courseId;
+        let courseName = "";
           const formattedDueDate = dueDate
             ? new Date(
                 dueDate.year,

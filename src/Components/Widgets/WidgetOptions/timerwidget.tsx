@@ -6,6 +6,8 @@ import statsImage from "../../../assets/Stats.png";
 import spotifyImage from "../../../assets/Spotify.png";
 import settingsImage from "../../../assets/Settings.png";
 import { useParams } from "react-router-dom";
+import { useState } from "react";
+import { useTimer } from "react-timer-hook";
 
 interface SideBarProp {
   imgsrc: string;
@@ -13,7 +15,6 @@ interface SideBarProp {
   onClick: () => void;
   active: boolean;
 }
-
 
 const TimerSideBarTitle: FC = (props) => {
   return <h1 className="timersidebarheader"> Timer </h1>;
@@ -37,30 +38,164 @@ const TimerSideBar: FC<SideBarProp> = (props) => {
   );
 };
 
-const TimerWidgetPage: FC = () => {
+const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
   const navigate = useNavigate();
   const { page } = useParams();
+  const [isOverlayOpen, setOverlayOpen] = useState(false);
+  const [isTimerRunning, setTimerRunning] = useState(false);
   const widgettitle = page || "Default Widget Title";
   let twidgetimage: string;
   let WidgetSubPage: JSX.Element | null = null;
+  const {
+    totalSeconds,
+    seconds,
+    minutes,
+    hours,
+    days,
+    isRunning,
+    start,
+    pause,
+    resume,
+    restart,
+  } = useTimer({
+    expiryTimestamp,
+    onExpire: () => console.warn("onExpire called"),
+    autoStart: false,
+  });
+  let formattedTime = `${String(hours).padStart(2, "0")}:${String(
+    minutes
+  ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+  const TimerOverlay = (
+    <>
+    <div className="overlayTimer">
+      <div className="editTimerHeader">
+        <h1> Edit Timer </h1> <span className="close" onClick={() => setOverlayOpen(false)} >x</span>
+      </div>
+      <div className="editTimerBody">
+        <div className="editTimerInput">
+          <ul className="inputcontainertimer">
+            <li className="timerinput">
+              <input className="hoursinput" />
+              <label className="timerlabels" id="hourlabel">
+                {" "}
+                Hours{" "}
+              </label>
+            </li>
+            <li className="timerinput">
+              <input className="minutesinput" />
+              <label className="timerlabels" id="minutelabel">
+                {" "}
+                Minutes{" "}
+              </label>
+            </li>
+            <li className="timerinput">
+              <input className="secondsinput" />
+              <label className="timerlabels" id="secondlabel">
+                {" "}
+                Seconds{" "}
+              </label>
+            </li>
+          </ul>
+        </div>
+        <div className="editTimerSettings">
+          <ul className="timersettings">
+            <li className="nameTimer">
+              {" "}
+              <label className="timerNameLabel">Timer Name: </label>
+              <input className="timerNameInput" />
+            </li>
+            <li className="alarmNoise">
+              {" "}
+              <label className="timerAlarmSound">Timer End Alarm: </label>
+              <select>
+                <option value={"Hello"}> Hello </option>
+              </select>
+            </li>
+          </ul>
+        </div>
+        <div className="timerButtons">
+          <ul className="timerButtonList">
+            <li className="deleteTimerButton">
+              <button className="timerButton" id="deleteTimer"> Delete Timer </button>
+               </li>
+            <li className="saveTimerButton">
+              <button className="timerButton" id="savetimer"> Done </button>
+               </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    </>
+  );
   switch (widgettitle) {
     case "Timer":
       twidgetimage = timerImage;
       WidgetSubPage = (
         <>
           <h1 className="timertitle"> Set Your Timer </h1>
-        <h1 className="timer">30:00</h1>
-        <ul className="timerpagelist">
-          <li className="timerbuttons">
-            <button className="timerbutton">Start</button>
-          </li>
-          <li className="timerbuttons">
-            <button className="timerbutton">End</button>
-          </li>
-        </ul>
+          <h1
+            className="timer"
+            onClick={() => {
+              setOverlayOpen(true);
+            }}
+          >
+            {formattedTime}
+          </h1>
+          {isOverlayOpen ? (
+            <div className="overlayTimerContainer">{TimerOverlay}</div>
+          ) : (
+            ""
+          )}
+          <p>{isRunning ? "Running" : "Not running"}</p>
+          <ul className="timerpagelist">
+            {isTimerRunning ? (
+              ""
+            ) : (
+              <li className="timerbuttons">
+                <button
+                  className="timerbutton"
+                  onClick={() => {
+                    if (!isTimerRunning) {
+                      console.log("HELLO");
+                      setTimerRunning(true);
+                      start();
+                    }
+                  }}
+                >
+                  Start
+                </button>
+              </li>
+            )}
+            {isTimerRunning ? (
+              <>
+                <li className="timerbuttons">
+                  <button
+                    className="timerbutton"
+                    onClick={isRunning ? pause : resume}
+                  >
+                    {isRunning ? "Pause" : "Resume"}
+                  </button>
+                </li>
+                <li className="timerbuttons">
+                  <button
+                    className="timerbutton"
+                    onClick={() => {
+                      const time = new Date();
+                      time.setSeconds(time.getSeconds() + 3000);
+                      restart(time, false);
+                      setTimerRunning(false);
+                    }}
+                  >
+                    Restart
+                  </button>
+                </li>
+              </>
+            ) : (
+              ""
+            )}
+          </ul>
         </>
-
-      
       );
       break;
     case "Stats":
@@ -80,8 +215,8 @@ const TimerWidgetPage: FC = () => {
   }
   return (
     <>
-    <div className="timerwidgettitle">
-      <SPWidgetTitle widgettitle={widgettitle} imageSource={twidgetimage} />
+      <div className="timerwidgettitle">
+        <SPWidgetTitle widgettitle={widgettitle} imageSource={twidgetimage} />
       </div>
       <div className="timerwidgetcontainer">
         <div className="timersidebar">
@@ -113,9 +248,7 @@ const TimerWidgetPage: FC = () => {
             />
           </ul>
         </div>
-        <div className="subpagewidget">
-          {WidgetSubPage}
-        </div>
+        <div className="subpagewidget">{WidgetSubPage}</div>
       </div>
     </>
   );

@@ -26,9 +26,6 @@ const scopes = [
   "https://www.googleapis.com/auth/classroom.coursework.students.readonly",
   "https://www.googleapis.com/auth/classroom.coursework.students",
   "https://www.googleapis.com/auth/classroom.coursework.me",
-  
-
-
   // Add more scopes as needed
 ];
 const scope = scopes.join(" "); // Combine the scopes into a single string
@@ -43,12 +40,6 @@ interface User {
   // Add other properties you expect in the user object here
 }
 
-interface UserProfile {
-  // Define the profile properties you expect here
-  id: string;
-  email: string;
-  // Add other properties you expect in the profile here
-}
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
