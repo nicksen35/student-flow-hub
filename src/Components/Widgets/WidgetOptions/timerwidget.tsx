@@ -1,6 +1,6 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import SPWidgetTitle from "../subpagewidgettitle";
-import { useNavigate, Routes, Route } from "react-router-dom";
+import { useNavigate, Routes, Route, useAsyncError } from "react-router-dom";
 import timerImage from "../../../assets/Timer.png";
 import statsImage from "../../../assets/Stats.png";
 import spotifyImage from "../../../assets/Spotify.png";
@@ -39,10 +39,19 @@ const TimerSideBar: FC<SideBarProp> = (props) => {
 };
 
 const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
+  const timerDuration:Date = new Date();
   const navigate = useNavigate();
   const { page } = useParams();
   const [isOverlayOpen, setOverlayOpen] = useState(false);
   const [isTimerRunning, setTimerRunning] = useState(false);
+  const [timerHours, setTimerHours] = useState(0);
+  const [timerMinutes, setTimerMinutes] = useState(0);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+  
+
+  useEffect(() => {
+
+  }, [])
   const widgettitle = page || "Default Widget Title";
   let twidgetimage: string;
   let WidgetSubPage: JSX.Element | null = null;
@@ -65,7 +74,57 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
   let formattedTime = `${String(hours).padStart(2, "0")}:${String(
     minutes
   ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  const handleHoursChange = (event) => {
+    const maxhours: number = 23
+    let value = parseInt(event.target.value, 10);
+    if (isNaN(value) || value < 0) {
+      value = 0;
+    } else if (value > maxhours) {
+      value = maxhours;
+    }  
+    value = Math.max(0, Math.min(99, value));
+  
+    setTimerHours(value);
+    console.log('value is:', value);
+  };
 
+  const handleMinutesChange = (event) => {
+    const maxminutes: number = 59
+    let value = parseInt(event.target.value, 10);
+    if (isNaN(value) || value < 0) {
+      value = 0;
+    } else if (value > maxminutes) {
+      value = 59;
+    }  
+    value = Math.max(0, Math.min(maxminutes, value));
+  
+    setTimerMinutes(value);
+    console.log('value is:', value);
+  };
+  const handleSecondsChange = (event) => {
+    const maxseconds: number = 59
+    let value = parseInt(event.target.value, 10);
+    if (isNaN(value) || value < 0) {
+      value = 0;
+    } else if (value > maxseconds) {
+      value = 59;
+    }  
+    value = Math.max(0, Math.min(maxseconds, value));
+    setTimerSeconds(value);
+    console.log('value is:', value);
+  };
+  
+  useEffect(()=> {
+    timerDuration.setSeconds(timerDuration.getSeconds() + timerSeconds);
+    timerDuration.setMinutes(timerDuration.getMinutes() + timerMinutes);
+    timerDuration.setHours(timerDuration.getHours() + timerHours);
+    console.log(timerDuration);
+    restart(timerDuration, false);
+  },[timerMinutes, timerSeconds, timerHours])
+
+  useEffect(() => {
+    console.log(timerDuration)
+  }, [timerDuration])
   const TimerOverlay = (
     <>
     <div className="overlayTimer">
@@ -76,21 +135,21 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
         <div className="editTimerInput">
           <ul className="inputcontainertimer">
             <li className="timerinput">
-              <input className="hoursinput" />
+              <input className="hoursinput" onChange={handleHoursChange} value={timerHours}/>
               <label className="timerlabels" id="hourlabel">
                 {" "}
                 Hours{" "}
               </label>
             </li>
             <li className="timerinput">
-              <input className="minutesinput" />
+              <input className="minutesinput" onChange={handleMinutesChange} value={timerMinutes}/>
               <label className="timerlabels" id="minutelabel">
                 {" "}
                 Minutes{" "}
               </label>
             </li>
             <li className="timerinput">
-              <input className="secondsinput" />
+              <input className="secondsinput" onChange={handleSecondsChange} value={timerSeconds} />
               <label className="timerlabels" id="secondlabel">
                 {" "}
                 Seconds{" "}
@@ -120,7 +179,7 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
               <button className="timerButton" id="deleteTimer"> Delete Timer </button>
                </li>
             <li className="saveTimerButton">
-              <button className="timerButton" id="savetimer"> Done </button>
+              <button className="timerButton" id="savetimer" onClick={() => setOverlayOpen(false)}> Done </button>
                </li>
           </ul>
         </div>
@@ -181,9 +240,11 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
                   <button
                     className="timerbutton"
                     onClick={() => {
-                      const time = new Date();
-                      time.setSeconds(time.getSeconds() + 3000);
-                      restart(time, false);
+                      timerDuration.setSeconds(timerDuration.getSeconds() + timerSeconds);
+                      timerDuration.setMinutes(timerDuration.getMinutes() + timerMinutes);
+                      timerDuration.setHours(timerDuration.getHours() + timerHours);
+                      console.log(timerDuration)
+                      restart(timerDuration, false);
                       setTimerRunning(false);
                     }}
                   >
