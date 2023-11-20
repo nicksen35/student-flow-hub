@@ -2,12 +2,12 @@ import { FC, useEffect } from "react";
 import SPWidgetTitle from "../subpagewidgettitle";
 import { useNavigate, Routes, Route, useAsyncError } from "react-router-dom";
 import timerImage from "../../../assets/Timer.png";
-import statsImage from "../../../assets/Stats.png";
 import spotifyImage from "../../../assets/Spotify.png";
 import settingsImage from "../../../assets/Settings.png";
+import ClockImage from '../../../assets/Clock.png'
 import { useParams } from "react-router-dom";
 import { useState } from "react";
-import { useTimer } from "react-timer-hook";
+import { useStopwatch, useTimer } from "react-timer-hook";
 
 interface SideBarProp {
   imgsrc: string;
@@ -47,11 +47,6 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
   const [timerHours, setTimerHours] = useState(0);
   const [timerMinutes, setTimerMinutes] = useState(0);
   const [timerSeconds, setTimerSeconds] = useState(0);
-  
-
-  useEffect(() => {
-
-  }, [])
   const widgettitle = page || "Default Widget Title";
   let twidgetimage: string;
   let WidgetSubPage: JSX.Element | null = null;
@@ -71,9 +66,23 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
     onExpire: () => console.warn("onExpire called"),
     autoStart: false,
   });
-  let formattedTime = `${String(hours).padStart(2, "0")}:${String(
+
+  const {
+    seconds: stopwatchSeconds,
+    minutes: stopwatchMinutes,
+    hours: stopwatchHours,
+    isRunning: stopwatchIsRunning,
+    start: stopwatchStart,
+    pause: stopwatchPause,
+    reset: stopwatchReset,
+  } = useStopwatch({ autoStart: false  });
+
+  const formattedTime = `${String(hours).padStart(2, "0")}:${String(
     minutes
   ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  const stopwatchFormattedTime = `${String(stopwatchHours).padStart(2, "0")}:${String(
+    stopwatchMinutes
+  ).padStart(2, "0")}:${String(stopwatchSeconds).padStart(2, "0")}`;
   const handleHoursChange = (event) => {
     const maxhours: number = 23
     let value = parseInt(event.target.value, 10);
@@ -216,7 +225,6 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
                   className="timerbutton"
                   onClick={() => {
                     if (!isTimerRunning) {
-                      console.log("HELLO");
                       setTimerRunning(true);
                       start();
                     }
@@ -259,9 +267,65 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
         </>
       );
       break;
-    case "Stats":
-      twidgetimage = statsImage;
-      WidgetSubPage = <h1> Hello From the Stats Page</h1>;
+    case "Stopwatch":
+      twidgetimage = ClockImage;
+
+      
+
+      WidgetSubPage = (
+        <>
+          <h1 className="timertitle"> Click to Use Stopwatch! </h1>
+          <h1
+            className="timer"
+          >
+            {stopwatchFormattedTime}
+          </h1>
+          <p>{stopwatchIsRunning ? "Running" : "Not running"}</p>
+          <ul className="timerpagelist">
+            {stopwatchIsRunning ? (
+              ""
+            ) : (
+              <li className="timerbuttons">
+                <button
+                  className="timerbutton"
+                  onClick={() => {
+                    if (!stopwatchIsRunning) {
+                      stopwatchStart();
+                    }
+                  }}
+                >
+                  Start
+                </button>
+              </li>
+            )}
+            {stopwatchIsRunning ? (
+              <>
+                <li className="timerbuttons">
+                  <button
+                    className="timerbutton"
+                    onClick={stopwatchIsRunning ? stopwatchPause : stopwatchStart}
+                  >
+                    {stopwatchIsRunning ? "Pause" : "Resume"}
+                  </button>
+                </li>
+                <li className="timerbuttons">
+                  <button
+                    className="timerbutton"
+                    onClick={() => {
+                      console.log(timerDuration);
+                      stopwatchReset();
+                    }}
+                  >
+                    Reset Stopwatch
+                  </button>
+                </li>
+              </>
+            ) : (
+              ""
+            )}
+          </ul>
+        </>
+      );
       break;
     case "Spotify":
       twidgetimage = spotifyImage;
@@ -290,10 +354,10 @@ const TimerWidgetPage: FC = ({ expiryTimestamp }) => {
               active={widgettitle === "Timer"} // Set active based on the current widget
             />
             <TimerSideBar
-              sbtext="Stats"
-              imgsrc={statsImage}
-              onClick={() => navigate("/timer/Stats")}
-              active={widgettitle === "Stats"} // Set active based on the current widget
+              sbtext="Stopwatch"
+              imgsrc={ClockImage}
+              onClick={() => navigate("/timer/Stopwatch")}
+              active={widgettitle === "Stopwatch"} // Set active based on the current widget
             />
             <TimerSideBar
               sbtext="Spotify"
