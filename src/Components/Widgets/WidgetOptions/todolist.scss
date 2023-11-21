@@ -1,0 +1,79 @@
+$font: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans",
+  Arial, sans-serif;
+$header-color: #96b6c5;
+$classroom-green: #20a464;
+$calendar-blue: #1967d2;
+$gmail-orange: #fbbc05;
+$top-widget-height: 40vh;
+$onepx-solid: 1px solid black;
+$gmail-blue: #3e65cf;
+$gmail-red: #c71610;
+$calendar-yellow: #fbbc04;
+$calendar-green: #34a853;
+$white: #fff;
+$google-blue: #4285f4;
+$button-active-blue: #1669f2;
+
+* {
+  font-family: $font;
+}
+
+.container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 67vh; 
+    padding: 10px; 
+    box-sizing: border-box; 
+  }
+  
+  .addnewToDo {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box; 
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 68vh;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  .todoListItemsContainer {
+    display: grid;
+    grid-template-columns: repeat(7, 3fr); /* Set the number of columns to 3 */
+    column-count: 5;
+    gap: 10px; 
+    overflow-y: auto;
+    margin-right:50px;
+  }
+  
+  .todoListItems {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .addNewToDoContainer {
+    margin-top: auto;
+    display: flex;
+    padding-top: 10px;
+    box-sizing: border-box;
+  }
+  
+  .addnewToDo {
+    width: calc(100% - 20px);
+    padding: 10px;
+    box-sizing: border-box;
+    width:100vh;
+  }
+  
+  .removebuttonToDo {
+    margin-left: 10px;
+  }
+  

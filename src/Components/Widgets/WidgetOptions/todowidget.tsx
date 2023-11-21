@@ -1,17 +1,24 @@
 import { FC } from "react";
 import SPWidgetTitle from "../subpagewidgettitle";
 import { useNavigate, Routes, Route } from "react-router-dom";
-import homeImage from '../../../assets/ToDoList.png'
-import todayImage from '../../../assets/CalendarIcon.png'
-import upcomingImage from '../../../assets/UpcomingIcon.png'
-import starredImage from '../../../assets/StarredIcon.png'
+import homeImage from "../../../assets/ToDoList.png";
+import todayImage from "../../../assets/CalendarIcon.png";
+import upcomingImage from "../../../assets/UpcomingIcon.png";
+import starredImage from "../../../assets/StarredIcon.png";
 import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import "./todolist.scss";
 
+import Cookies from "js-cookie";
 interface SideBarProp {
   imgsrc: string;
   sbtext: string;
   onClick: () => void;
   active: boolean;
+}
+interface Todo {
+  id: number;
+  text: string;
 }
 
 const ToDoSideBarTitle: FC = (props) => {
@@ -42,13 +49,62 @@ const ToDoWidgetPage: FC = () => {
   const widgettitle = page || "Default Widget Title";
   let twidgetimage: string;
   let WidgetSubPage: JSX.Element | null = null;
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  /*useEffect(() => {
+    // Load todos from cookies when component mounts
+    const storedTodos = Cookies('todos');
+    if (storedTodos) {
+      setTodos(storedTodos);
+    }
+  }, []); */
+
+  useEffect(() => {
+    // Save todos to cookies whenever todos change
+    Cookies.set("todos", todos);
+  }, [todos]);
+
+  const addTodo = (text: string) => {
+    setTodos((prevTodos) => [...prevTodos, { id: new Date().getTime(), text }]);
+  };
+
+  const removeTodo = (id: number) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  };
+
   switch (widgettitle) {
     case "Home":
       twidgetimage = homeImage;
       WidgetSubPage = (
-      
-      <h1 className="todotitle"> To-Do List </h1>   
-      
+        <div className="container">
+  <ul className="todoListItemsContainer">
+    {todos.map((todo) => (
+      <li className="todoListItems" key={todo.id}>
+        {todo.text}
+        <button
+          className="removebuttonToDo"
+          onClick={() => removeTodo(todo.id)}
+        >
+          Remove
+        </button>
+      </li>
+    ))}
+  </ul>
+  <div className="addNewToDoContainer">
+    <input
+      className="addnewToDo"
+      type="text"
+      placeholder="Add a new todo"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
+          addTodo(e.currentTarget.value.trim());
+          e.currentTarget.value = '';
+        }
+      }}
+    />
+  </div>
+</div>
+
       );
       break;
     case "Today":
@@ -68,8 +124,8 @@ const ToDoWidgetPage: FC = () => {
   }
   return (
     <>
-    <div className="todowidgettitle">
-      <SPWidgetTitle widgettitle={widgettitle} imageSource={twidgetimage} />
+      <div className="todowidgettitle">
+        <SPWidgetTitle widgettitle={widgettitle} imageSource={twidgetimage} />
       </div>
       <div className="todowidgetcontainer">
         <div className="todosidebar">
@@ -79,13 +135,13 @@ const ToDoWidgetPage: FC = () => {
               sbtext="Home"
               imgsrc={homeImage}
               onClick={() => navigate("/todo/Home")}
-              active={widgettitle === "Home"} 
+              active={widgettitle === "Home"}
             />
             <ToDoSideBar
               sbtext="Today"
               imgsrc={todayImage}
               onClick={() => navigate("/todo/Today")}
-              active={widgettitle === "Today"} 
+              active={widgettitle === "Today"}
             />
             <ToDoSideBar
               sbtext="Upcoming"
@@ -101,9 +157,7 @@ const ToDoWidgetPage: FC = () => {
             />
           </ul>
         </div>
-        <div className="subpagewidget">
-            {WidgetSubPage}
-        </div>
+        <div className="subpagewidget">{WidgetSubPage}</div>
       </div>
     </>
   );
