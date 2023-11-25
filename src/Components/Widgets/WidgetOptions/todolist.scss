@@ -19,29 +19,19 @@ $button-active-blue: #1669f2;
 }
 .todoOverlay
 {
-  position: fixed;
-  top: 40%;
-  left: 59%;
-  transform: translate(-50%, -50%);
   border-radius: 8px;
   text-align: center;
-  z-index: 1000;
-  border:$onepx-solid;
+
+  z-index: 1;
   display:block;
   width:100vh;
 }
-.todoOverlayContainer
+.toDoOverlayContainer
 {
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display:block;
-  background-color: white; 
-  border:$onepx-solid;
+  margin-top:2%;
+  border:1px solid black;
   z-index: 2;
   cursor: pointer;
-  box-shadow: 5px 5px 2px;
 }
 .inputBoxes
 {
@@ -118,4 +108,64 @@ $button-active-blue: #1669f2;
 {
   color:white;
   background-color:black;
+}
+.todoDescription
+{
+  font-weight:bold;
+  display:block;
+  opacity:50%;
+  margin:0;
+}
+.toDoInfo
+{
+  display:block;
+  border-bottom:$onepx-solid;
+  margin-top:5px;
+
+}
+
+.toDoInfo
+{
+  text-align: left;
+  width:50vh;
+  text-indent: 5px;
+}
+.todoDueDate
+{
+  margin:0;
+  margin-top:2px;
+  color:red;
+  font-weight:bold;
+}
+.toDoTitle
+{
+  margin:0;
+  font-size:25px;
+}
+.createToDoButton
+{
+  border:0;
+  outline:0;
+  background-color: transparent;
+  font-size:15px;
+  color:grey;
+  margin:0;
+  opacity:100%;
+}
+.newtaskImage
+{
+  height:20px;
+  margin:0;
+}
+.createToDoButtonContainer
+{
+  display:flex;
+  justify-content: center;
+}
+.createToDoButtonContainer:hover
+{
+  filter:invert(72%) sepia(35%) saturate(201%) hue-rotate(154deg) brightness(92%) contrast(90%);
+}
+.toDoElementContainers {
+  height:70vh;
 }

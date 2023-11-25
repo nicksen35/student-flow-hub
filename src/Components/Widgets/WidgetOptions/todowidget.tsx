@@ -8,22 +8,116 @@ import starredImage from "../../../assets/StarredIcon.png";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./todolist.scss";
+import plusIcon from  "../../../assets/plussymbol.svg"
 
 import Cookies from "js-cookie";
+import { todo } from "node:test";
 interface SideBarProp {
   imgsrc: string;
   sbtext: string;
   onClick: () => void;
   active: boolean;
 }
+
 interface Todo {
   id: number;
   text: string;
 }
 
+const ToDoOverlay: FC<{
+  onTaskCreate: (taskinfo: object) => void;
+  onClose: () => void;
+}> = ({ onTaskCreate, onClose }) => {
+  const [taskName, setTaskName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState("");
+
+  const handleCreateTask = () => {
+    const formatDueDate = (dueDateString: string): string => {
+      if (dueDateString == "")
+      {
+        return;
+      }
+      const dueDate = new Date(dueDateString);
+      const now = new Date();
+
+      const options: Intl.DateTimeFormatOptions = {
+        month: "long",
+        day: "numeric",
+        year:
+          now.getFullYear() !== dueDate.getFullYear() ? "numeric" : undefined,
+      };
+
+      return new Intl.DateTimeFormat("en-US", options).format(dueDate);
+    };
+    const taskInfo = {
+      id: new Date().getTime(),
+      text: taskName,
+      description: taskDescription,
+      dueDate: formatDueDate(dueDate),
+    };
+    console.log(taskInfo);
+    onTaskCreate(taskInfo);
+    onClose();
+  };
+
+  return (
+    <div className="toDoOverlayContainer">
+      <div className="todoOverlay">
+        <ul className="inputBoxes">
+          <li className="taskName">
+            {" "}
+            <input
+              className="taskNameInput"
+              placeholder="Task Name"
+              value={taskName}
+              onChange={(e) => setTaskName(e.target.value)}
+            />{" "}
+          </li>
+          <li className="taskDescription">
+            {" "}
+            <input
+              className="taskDescriptionInput"
+              placeholder="Description"
+              value={taskDescription}
+              onChange={(e) => setTaskDescription(e.target.value)}
+            />
+          </li>
+          <div className="bottomBar">
+            <li className="dueDate">
+              {" "}
+              <label htmlFor="dueDateforTask"> Due Date </label>
+              <input
+                type="date"
+                className="dueDateforTask"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />{" "}
+            </li>
+          </div>
+          <div className="todoOptions">
+            <li className="closeToDo">
+              <button className="closeButton" onClick={onClose}>
+                Close
+              </button>
+            </li>
+            <li className="create">
+              <button className="createButton" onClick={handleCreateTask}>
+                Create
+              </button>
+            </li>
+          </div>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 const ToDoSideBarTitle: FC = (props) => {
   return <h1 className="todosidebarheader"> To-Do </h1>;
 };
+
 const ToDoSideBar: FC<SideBarProp> = (props) => {
   return (
     <>
@@ -51,65 +145,16 @@ const ToDoWidgetPage: FC = () => {
   let twidgetimage: string;
   let WidgetSubPage: JSX.Element | null = null;
   const [todos, setTodos] = useState<Todo[]>([]);
-  const ToDoOverlay = (
-    <div className="toDoOverlayContainer">
-      <div className="todoOverlay">
-        <ul className="inputBoxes">
-          <li className="taskName">
-            {" "}
-            <input className="taskNameInput" placeholder="Task Name" />{" "}
-          </li>
-          <li className="taskDescription">
-            {" "}
-            <input className="taskDescriptionInput" placeholder="Description" />
-          </li>
-          <div className="bottomBar">
-            <li className="dueDate">
-              {" "}
-              <label htmlFor="dueDateforTask"> Due Date </label>
-              <input type="date" className="dueDateforTask" />{" "}
-            </li>
-            <li className="priority">
-              <select className="priorityInput">
-                <option> Priority 1 </option>
-                <option> Priority 2 </option>
-                <option> Priority 3 </option>
-                <option> Priority 4</option>
-              </select>
-            </li>
-          </div>
-          <div className="todoOptions">
-          <li className="closeToDo">
-            <button className="closeButton"> Close </button>
-          </li>
-          <li className="create">
-            <button className="createButton"> Create </button>
-          </li>
-          </div>
-        </ul>
-      </div>
-    </div>
-  );
-  /*useEffect(() => {
-    // Load todos from cookies when component mounts
-    const storedTodos = Cookies('todos');
-    if (storedTodos) {
-      setTodos(storedTodos);
-    }
-  }, []); */
+
+  const handleTaskCreate = (taskinfo: object) => {
+    // Adding the task to the state
+    setTodos((prevTodos) => [...prevTodos, taskinfo]);
+  };
 
   useEffect(() => {
-    // Save todos to cookies whenever todos change
-    Cookies.set("todos", todos);
+    console.log(todos);
+    Cookies.set("todos", JSON.stringify(todos));
   }, [todos]);
-
-  const addTodo = (text: string) => {
-    setTodos((prevTodos) => [...prevTodos, { id: new Date().getTime(), text }]);
-  };
-
-  const removeTodo = (id: number) => {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
-  };
 
   switch (widgettitle) {
     case "Home":
@@ -117,17 +162,43 @@ const ToDoWidgetPage: FC = () => {
 
       WidgetSubPage = (
         <>
+        {creatingEvent ? (
+            <ToDoOverlay
+              onTaskCreate={handleTaskCreate}
+              onClose={() => setCreatingEvent(false)}
+            />
+          ) : (
+            ""
+          )}
+        <div className="toDoElementContainers">
+          <div className="ToDoItems">
+            <ul>
+              {todos.map((todo) => (
+                <li className="toDoInfo" key={todo.id}>
+                  <p className="toDoTitle"> {todo.text} </p>
+                  {todo.description ? (
+                    <p className="todoDescription"> {todo.description} </p>
+                  ) : null}
+                  {todo.dueDate ? (
+                    <p className="todoDueDate"> {todo.dueDate} </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="createToDoButtonContainer">
+            <img className="newtaskImage" alt="newtaskImage" src={plusIcon} onClick={() => setCreatingEvent(true)} />
             <button
               className="createToDoButton"
               onClick={() => setCreatingEvent(true)}
             >
               {" "}
-              Create New Task{" "}
+              Add Task{" "}
             </button>
           </div>
-          {creatingEvent ? ToDoOverlay : ""}
-          <div className="ToDoItems"></div>
+
+          
+          </div>
         </>
       );
       break;
@@ -146,6 +217,7 @@ const ToDoWidgetPage: FC = () => {
     default:
       twidgetimage = homeImage;
   }
+
   return (
     <>
       <div className="todowidgettitle">
@@ -186,4 +258,5 @@ const ToDoWidgetPage: FC = () => {
     </>
   );
 };
+
 export default ToDoWidgetPage;
