@@ -17,63 +17,105 @@ $button-active-blue: #1669f2;
 * {
   font-family: $font;
 }
+.todoOverlay
+{
+  position: fixed;
+  top: 40%;
+  left: 59%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  text-align: center;
+  z-index: 1000;
+  border:$onepx-solid;
+  display:block;
+  width:100vh;
+}
+.todoOverlayContainer
+{
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display:block;
+  background-color: white; 
+  border:$onepx-solid;
+  z-index: 2;
+  cursor: pointer;
+  box-shadow: 5px 5px 2px;
+}
+.inputBoxes
+{
+  list-style: none;
+  text-align: left;
+  float:left;
+  
+}
+.inputBoxes input
+{
+  border:0;
+  outline:0;
+}
+.taskNameInput
+{
+  text-align:left;
+  font-size:25px;
+  width:85vh;
+  font-weight:bold;
 
-.container {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    height: 67vh; 
-    padding: 10px; 
-    box-sizing: border-box; 
-  }
-  
-  .addnewToDo {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box; 
-  }
+}
+.taskDescriptionInput
+{
+  font-size:20px;
+}
 
-  .container {
-    display: flex;
-    flex-direction: column;
-    height: 68vh;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-  
-  .todoListItemsContainer {
-    display: grid;
-    grid-template-columns: repeat(7, 3fr); /* Set the number of columns to 3 */
-    column-count: 5;
-    gap: 10px; 
-    overflow-y: auto;
-    margin-right:50px;
-  }
-  
-  .todoListItems {
-    list-style: none;
-    padding: 10px;
-    margin: 0;
-    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .addNewToDoContainer {
-    margin-top: auto;
-    display: flex;
-    padding-top: 10px;
-    box-sizing: border-box;
-  }
-  
-  .addnewToDo {
-    width: calc(100% - 20px);
-    padding: 10px;
-    box-sizing: border-box;
-    width:100vh;
-  }
-  
-  .removebuttonToDo {
-    margin-left: 10px;
-  }
-  
+.bottomBar
+{
+  margin-top:2%;
+  margin-left:0.5%;
+  display:flex;
+  flex-direction:row;
+  column-gap:5%;
+}
+.priority, .dueDate
+{
+  border:$onepx-solid;
+  padding:5px;
+}
+.priorityInput
+{
+  outline:0;
+  border:0;
+}
+.todoOptions
+{
+  display:flex;
+  margin-top:2%;
+  margin-left:80%; 
+  column-gap:20%;
+}
+.closeButton
+{
+  background-color:$gmail-red;
+  color:white;
+
+}
+.createButton
+{
+  background:$gmail-blue;
+  color:white;
+}
+.todoOptions button
+{
+  border:none;
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-right:10px;
+  padding-left:10px;
+  font-weight:bold;
+  border-radius:2px;
+}
+.todoOptions button:hover
+{
+  color:white;
+  background-color:black;
+}

@@ -46,11 +46,50 @@ const ToDoSideBar: FC<SideBarProp> = (props) => {
 const ToDoWidgetPage: FC = () => {
   const navigate = useNavigate();
   const { page } = useParams();
+  const [creatingEvent, setCreatingEvent] = useState(false);
   const widgettitle = page || "Default Widget Title";
   let twidgetimage: string;
   let WidgetSubPage: JSX.Element | null = null;
   const [todos, setTodos] = useState<Todo[]>([]);
-
+  const ToDoOverlay = (
+    <div className="toDoOverlayContainer">
+      <div className="todoOverlay">
+        <ul className="inputBoxes">
+          <li className="taskName">
+            {" "}
+            <input className="taskNameInput" placeholder="Task Name" />{" "}
+          </li>
+          <li className="taskDescription">
+            {" "}
+            <input className="taskDescriptionInput" placeholder="Description" />
+          </li>
+          <div className="bottomBar">
+            <li className="dueDate">
+              {" "}
+              <label htmlFor="dueDateforTask"> Due Date </label>
+              <input type="date" className="dueDateforTask" />{" "}
+            </li>
+            <li className="priority">
+              <select className="priorityInput">
+                <option> Priority 1 </option>
+                <option> Priority 2 </option>
+                <option> Priority 3 </option>
+                <option> Priority 4</option>
+              </select>
+            </li>
+          </div>
+          <div className="todoOptions">
+          <li className="closeToDo">
+            <button className="closeButton"> Close </button>
+          </li>
+          <li className="create">
+            <button className="createButton"> Create </button>
+          </li>
+          </div>
+        </ul>
+      </div>
+    </div>
+  );
   /*useEffect(() => {
     // Load todos from cookies when component mounts
     const storedTodos = Cookies('todos');
@@ -75,36 +114,21 @@ const ToDoWidgetPage: FC = () => {
   switch (widgettitle) {
     case "Home":
       twidgetimage = homeImage;
-      WidgetSubPage = (
-        <div className="container">
-  <ul className="todoListItemsContainer">
-    {todos.map((todo) => (
-      <li className="todoListItems" key={todo.id}>
-        {todo.text}
-        <button
-          className="removebuttonToDo"
-          onClick={() => removeTodo(todo.id)}
-        >
-          Remove
-        </button>
-      </li>
-    ))}
-  </ul>
-  <div className="addNewToDoContainer">
-    <input
-      className="addnewToDo"
-      type="text"
-      placeholder="Add a new todo"
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' && e.currentTarget.value.trim() !== '') {
-          addTodo(e.currentTarget.value.trim());
-          e.currentTarget.value = '';
-        }
-      }}
-    />
-  </div>
-</div>
 
+      WidgetSubPage = (
+        <>
+          <div className="createToDoButtonContainer">
+            <button
+              className="createToDoButton"
+              onClick={() => setCreatingEvent(true)}
+            >
+              {" "}
+              Create New Task{" "}
+            </button>
+          </div>
+          {creatingEvent ? ToDoOverlay : ""}
+          <div className="ToDoItems"></div>
+        </>
       );
       break;
     case "Today":
