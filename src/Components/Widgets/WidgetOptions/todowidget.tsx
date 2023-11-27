@@ -31,7 +31,6 @@ const ToDoOverlay: FC<{
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
-  const [priority, setPriority] = useState("");
 
   const handleCreateTask = () => {
     const formatDueDate = (dueDateString: string): string => {
@@ -149,12 +148,39 @@ const ToDoWidgetPage: FC = () => {
   const handleTaskCreate = (taskinfo: object) => {
     // Adding the task to the state
     setTodos((prevTodos) => [...prevTodos, taskinfo]);
+  
+    // Read existing tasks from the "todos" cookie
+    const existingTasks = Cookies.get("todos");
+    const existingTasksArray = existingTasks ? JSON.parse(existingTasks) : [];
+  
+    // Append the new task to the existing array and update the "todos" cookie
+    const updatedTasks = [...existingTasksArray, taskinfo];
+    console.log(updatedTasks);
+    Cookies.set("todos", JSON.stringify(updatedTasks));
   };
-
+  
+    
+  
   useEffect(() => {
-    console.log(todos);
-    Cookies.set("todos", JSON.stringify(todos));
-  }, [todos]);
+    (async () => {
+      const storedTodos = Cookies.get("todos");
+      try {
+        
+        if (storedTodos) {
+          const parsedTodos = JSON.parse(storedTodos);
+          console.log(parsedTodos);
+          await setTodos(parsedTodos || "Cannot Find");
+        }
+      } catch (error) {
+        console.log(storedTodos);
+        console.error(error);
+      }
+    })();
+  }, []); 
+  
+  
+
+// ... (your existing code)
 
   switch (widgettitle) {
     case "Home":
