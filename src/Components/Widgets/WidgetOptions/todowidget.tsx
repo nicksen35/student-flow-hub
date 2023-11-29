@@ -8,7 +8,7 @@ import starredImage from "../../../assets/StarredIcon.png";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./todolist.scss";
-import plusIcon from  "../../../assets/plussymbol.svg"
+import plusIcon from "../../../assets/plussymbol.svg";
 
 import Cookies from "js-cookie";
 import { todo } from "node:test";
@@ -34,8 +34,7 @@ const ToDoOverlay: FC<{
 
   const handleCreateTask = () => {
     const formatDueDate = (dueDateString: string): string => {
-      if (dueDateString == "")
-      {
+      if (dueDateString == "") {
         return;
       }
       const dueDate = new Date(dueDateString);
@@ -137,6 +136,15 @@ const ToDoSideBar: FC<SideBarProp> = (props) => {
 };
 
 const ToDoWidgetPage: FC = () => {
+  function isToday(date) {
+    const today = new Date();
+    const todoDate = new Date(date);
+    return (
+      todoDate.getDate() === today.getDate() &&
+      todoDate.getMonth() === today.getMonth() &&
+      todoDate.getFullYear() === today.getFullYear()
+    );
+  } 
   const navigate = useNavigate();
   const { page } = useParams();
   const [creatingEvent, setCreatingEvent] = useState(false);
@@ -148,24 +156,21 @@ const ToDoWidgetPage: FC = () => {
   const handleTaskCreate = (taskinfo: object) => {
     // Adding the task to the state
     setTodos((prevTodos) => [...prevTodos, taskinfo]);
-  
+
     // Read existing tasks from the "todos" cookie
     const existingTasks = Cookies.get("todos");
     const existingTasksArray = existingTasks ? JSON.parse(existingTasks) : [];
-  
+
     // Append the new task to the existing array and update the "todos" cookie
     const updatedTasks = [...existingTasksArray, taskinfo];
     console.log(updatedTasks);
     Cookies.set("todos", JSON.stringify(updatedTasks));
   };
-  
-    
-  
+
   useEffect(() => {
     (async () => {
       const storedTodos = Cookies.get("todos");
       try {
-        
         if (storedTodos) {
           const parsedTodos = JSON.parse(storedTodos);
           console.log(parsedTodos);
@@ -176,19 +181,18 @@ const ToDoWidgetPage: FC = () => {
         console.error(error);
       }
     })();
-  }, []); 
-  
-  
+  }, []);
 
-// ... (your existing code)
+  // ... (your existing code)
 
   switch (widgettitle) {
+    
     case "Home":
       twidgetimage = homeImage;
 
       WidgetSubPage = (
         <>
-        {creatingEvent ? (
+          {creatingEvent ? (
             <ToDoOverlay
               onTaskCreate={handleTaskCreate}
               onClose={() => setCreatingEvent(false)}
@@ -196,45 +200,152 @@ const ToDoWidgetPage: FC = () => {
           ) : (
             ""
           )}
-        <div className="toDoElementContainers">
-          <div className="ToDoItems">
-            <ul>
-              {todos.map((todo) => (
-                <li className="toDoInfo" key={todo.id}>
-                  <p className="toDoTitle"> {todo.text} </p>
-                  {todo.description ? (
-                    <p className="todoDescription"> {todo.description} </p>
-                  ) : null}
-                  {todo.dueDate ? (
-                    <p className="todoDueDate"> {todo.dueDate} </p>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="createToDoButtonContainer">
-            <img className="newtaskImage" alt="newtaskImage" src={plusIcon} onClick={() => setCreatingEvent(true)} />
-            <button
-              className="createToDoButton"
-              onClick={() => setCreatingEvent(true)}
-            >
-              {" "}
-              Add Task{" "}
-            </button>
-          </div>
-
-          
+          <div className="toDoElementContainers">
+            <div className="ToDoItems">
+              <ul>
+                {todos.map((todo) => (
+                  <li className="toDoInfo" key={todo.id}>
+                    <p className="toDoTitle"> {todo.text} </p>
+                    {todo.description ? (
+                      <p className="todoDescription"> {todo.description} </p>
+                    ) : null}
+                    {todo.dueDate ? (
+                      <p className="todoDueDate"> {todo.dueDate} </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="createToDoButtonContainer">
+              <img
+                className="newtaskImage"
+                alt="newtaskImage"
+                src={plusIcon}
+                onClick={() => setCreatingEvent(true)}
+              />
+              <button
+                className="createToDoButton"
+                onClick={() => setCreatingEvent(true)}
+              >
+                {" "}
+                Add Task{" "}
+              </button>
+            </div>
           </div>
         </>
       );
       break;
     case "Today":
       twidgetimage = todayImage;
-      WidgetSubPage = <h1> Hello From the Stats Page</h1>;
+
+      WidgetSubPage = (
+        <>
+          {creatingEvent ? (
+            <ToDoOverlay
+              onTaskCreate={handleTaskCreate}
+              onClose={() => setCreatingEvent(false)}
+            />
+          ) : (
+            ""
+          )}
+          <div className="toDoElementContainers">
+            <div className="ToDoItems">
+              <ul>
+                {todos.map((todo) =>
+                  todo.dueDate ? (
+                    <li className="toDoInfo" key={todo.id}>
+                      <p className="toDoTitle">{todo.text}</p>
+                      {todo.description ? (
+                        <p className="todoDescription">{todo.description}</p>
+                      ) : null}
+                      {todo.dueDate ? (
+                        <p className="todoDueDate">{todo.dueDate}</p>
+                      ) : null}
+                    </li>
+                  ) : null
+                )}
+              </ul>
+            </div>
+            <div className="createToDoButtonContainer">
+              <img
+                className="newtaskImage"
+                alt="newtaskImage"
+                src={plusIcon}
+                onClick={() => setCreatingEvent(true)}
+              />
+              <button
+                className="createToDoButton"
+                onClick={() => setCreatingEvent(true)}
+              >
+                {" "}
+                Add Task{" "}
+              </button>
+            </div>
+          </div>
+        </>
+      );
       break;
-    case "Upcoming":
-      twidgetimage = upcomingImage;
-      WidgetSubPage = <h1> Hello From the Spotify Page</h1>;
+      case "Upcoming":
+  twidgetimage = upcomingImage;
+
+  // Filter tasks with due dates greater than today
+  const upcomingTodos = todos.filter((todo) => {
+    if (todo.dueDate) {
+      const todoDate = new Date(todo.dueDate);
+      const today = new Date();
+      console.log(todoDate, today)
+      console.log(todoDate>today)
+      return todoDate > today;
+    }
+    return false;
+  });
+
+  WidgetSubPage = (
+    <>
+      {creatingEvent ? (
+        <ToDoOverlay
+          onTaskCreate={handleTaskCreate}
+          onClose={() => setCreatingEvent(false)}
+        />
+      ) : (
+        ""
+      )}
+      <div className="toDoElementContainers">
+        <div className="ToDoItems">
+          <ul>
+            {upcomingTodos.map((todo) => (
+              <li className="toDoInfo" key={todo.id}>
+                <p className="toDoTitle">{todo.text}</p>
+                {todo.description ? (
+                  <p className="todoDescription">{todo.description}</p>
+                ) : null}
+                {todo.dueDate ? (
+                  <p className="todoDueDate">{todo.dueDate}</p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="createToDoButtonContainer">
+          <img
+            className="newtaskImage"
+            alt="newtaskImage"
+            src={plusIcon}
+            onClick={() => setCreatingEvent(true)}
+          />
+          <button
+            className="createToDoButton"
+            onClick={() => setCreatingEvent(true)}
+          >
+            {" "}
+            Add Task{" "}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+  break;
+
       break;
     case "Starred":
       twidgetimage = starredImage;
