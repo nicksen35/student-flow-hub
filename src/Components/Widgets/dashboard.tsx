@@ -11,6 +11,7 @@ import timerImage from "../../assets/Timer.png";
 import { GetCalendarsIds, GetEvents } from "./calendarfunctions";
 import Calendar from "react-calendar";
 import "../../ReactCalendar.scss";
+import Cookies from "js-cookie";
 import {
   getAssignments,
   fetchCourses,
@@ -39,13 +40,10 @@ const Dashboard = () => {
     "Grades",
     "Teachers",
   ];
-  const todolistdropdown = [
-    "Filter",
-    "Filler",
-  ]
+  const todolistdropdown = ["Home", "Today", "Upcoming", "Starred"];
   const [TDWidget, setTDWidget] = useState({
-    widget1:todolistdropdown[1],
-  })
+    widget1: todolistdropdown[0],
+  });
   const [CRWidget, setCRWidget] = useState({
     widget1: classroomdropdownoptions[0],
   });
@@ -346,26 +344,26 @@ const Dashboard = () => {
   };
 
   const ProjectsWidget: FC<WidgetProp> = (prop) => {
-    const ProjectsContent:Array = ["Example Project 1", "Example Project 2", "Example Project 3"]
+    const ProjectsContent: Array = [
+      "Example Project 1",
+      "Example Project 2",
+      "Example Project 3",
+    ];
     return (
       <>
         <div className="projectswidget" onClick={prop.onClick}>
           <div className="projectswidgetheader">
             <WidgetTitle widgettitle="Projects" imageSource={projectsImage} />
           </div>
-          <div className="projectcontent"> 
-          <div className="projectstitle">
-            <h1 className="activeprojects"> Active Projects: </h1> 
-            <div className="projects">
-              {ProjectsContent.map((projects) => {
-                return(
-                  <div className="projectdsb"> {projects} </div>
-                )
-                
-              })}
-
+          <div className="projectcontent">
+            <div className="projectstitle">
+              <h1 className="activeprojects"> Active Projects: </h1>
+              <div className="projects">
+                {ProjectsContent.map((projects) => {
+                  return <div className="projectdsb"> {projects} </div>;
+                })}
+              </div>
             </div>
-          </div>
           </div>
         </div>
       </>
@@ -373,9 +371,109 @@ const Dashboard = () => {
   };
 
   const ToDoWidget: FC<WidgetProp> = (prop) => {
-    const TodoContent:Array = ["Example Project 1", "Example Project 2", "Example Project 3"]
+    let TDWidgetContent;
+    const TodoContent: Array = [
+      "Example Project 1",
+      "Example Project 2",
+      "Example Project 3",
+    ];
+    const [todos, setTodos] = useState([]);
+    function isToday(formattedDateString) {
+      const today = new Intl.DateTimeFormat("en-US", {
+        month: "long",
+        day: "numeric",
+      }).format(new Date());
+
+      return formattedDateString === today;
+    }
+    function isUpcoming(formattedDateString) {
+      const today = new Intl.DateTimeFormat("en-US", {
+        month: "long",
+        day: "numeric",
+      }).format(new Date());
+    
+      return formattedDateString > today;
+    }
+
+    switch (TDWidget.widget1) {
+      case "Home":
+        TDWidgetContent = (
+          <ul>
+            {todos.map((todo) => (
+              <li className="toDoInfo" key={todo.id}>
+                <p className="toDoTitle"> {todo.text} </p>
+                {todo.description ? (
+                  <p className="todoDescription"> {todo.description} </p>
+                ) : null}
+                {todo.dueDate ? (
+                  <p className="todoDueDate"> {todo.dueDate} </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        );
+        break;
+
+      case "Today":
+        TDWidgetContent = (
+          <ul>
+            {todos.map((todo) =>
+              isToday(todo.dueDate) ? (
+                <li className="toDoInfo" key={todo.id}>
+                  <p className="toDoTitle">{todo.text}</p>
+                  {todo.description ? (
+                    <p className="todoDescription">{todo.description}</p>
+                  ) : null}
+                  {todo.dueDate ? (
+                    <p className="todoDueDate">{todo.dueDate}</p>
+                  ) : null}
+                </li>
+              ) : null
+            )}
+          </ul>
+        );
+        break;
+
+      case "Upcoming":
+        TDWidgetContent = (
+          <ul>
+            {todos.map((todo) =>
+              isUpcoming(todo.dueDate) == true ? (
+                <li className="toDoInfo" key={todo.id}>
+                  <p className="toDoTitle">{todo.text}</p>
+                  {todo.description ? (
+                    <p className="todoDescription">{todo.description}</p>
+                  ) : null}
+                  {todo.dueDate ? (
+                    <p className="todoDueDate">{todo.dueDate}</p>
+                  ) : null}
+                </li>
+              ) : null
+            )}
+          </ul>
+        );
+        break;
+
+      case "Starred":
+        break;
+    }
+    useEffect(() => {
+      (async () => {
+        const storedTodos = Cookies.get("todos");
+        try {
+          if (storedTodos) {
+            const parsedTodos = JSON.parse(storedTodos);
+            console.log(parsedTodos);
+            await setTodos(parsedTodos || "Cannot Find");
+          }
+        } catch (error) {
+          console.log(storedTodos);
+          console.error(error);
+        }
+      })();
+    }, []);
     const handleHeaderChange = (event: number) => {
-      setCRWidget((prevState) => ({
+      setTDWidget((prevState) => ({
         ...prevState,
         [`widget${prop.WidgetID}`]: todolistdropdown[event],
       }));
@@ -383,27 +481,25 @@ const Dashboard = () => {
     };
     return (
       <>
-        <div className="todowidget" onClick={prop.onClick}>
+        <div className="todowidget">
           <div className="todowidgetheader">
             <WidgetTitle widgettitle="To-Do List" imageSource={todoImage} />
           </div>
           <div className="dsb-tododropdown">
-          <div className="dsb-todosubtitle">
-            <button className="dsb-todowidgetname">
-              {prop.WidgetName} <i className="dashboarddown"></i>
-            </button>
+            <div className="dsb-todosubtitle">
+              <button className="dsb-todowidgetname">
+                {prop.WidgetName} <i className="dashboarddown"></i>
+              </button>
+            </div>
+            <div className="dsbtodo-content">
+              {todolistdropdown.map((options, index) => (
+                <a key={index} onClick={() => handleHeaderChange(index)}>
+                  {options}
+                </a>
+              ))}
+            </div>
           </div>
-          <div className="dsbtodo-content">
-            {todolistdropdown.map((options, index) => (
-              <a key={index} onClick={() => handleHeaderChange(index)}>
-                {options}
-              </a>
-            ))}
-          </div>
-          <div className="todoitems">
-             
-          </div>
-        </div>
+          <div className="todoitems" onClick={prop.onClick}>{TDWidgetContent}</div>
         </div>
       </>
     );
@@ -444,7 +540,11 @@ const Dashboard = () => {
         </div>
         <div className="bottomwidgetcontainer">
           <TimerWidget onClick={() => navigate("/timer/Timer")} />
-          <ToDoWidget onClick={() => navigate("/todo/Home")} WidgetName={TDWidget.widget1} WidgetID={1} />
+          <ToDoWidget
+            onClick={() => navigate("/todo/Home")}
+            WidgetName={TDWidget.widget1}
+            WidgetID={1}
+          />
           <ProjectsWidget onClick={() => navigate("/projects/Home")} />
         </div>
       </div>

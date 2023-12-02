@@ -136,15 +136,15 @@ const ToDoSideBar: FC<SideBarProp> = (props) => {
 };
 
 const ToDoWidgetPage: FC = () => {
-  function isToday(date) {
-    const today = new Date();
-    const todoDate = new Date(date);
-    return (
-      todoDate.getDate() === today.getDate() &&
-      todoDate.getMonth() === today.getMonth() &&
-      todoDate.getFullYear() === today.getFullYear()
-    );
-  } 
+  function isToday(formattedDateString) {
+    const today = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+    }).format(new Date());
+  
+    return formattedDateString === today;
+  }
+  
   const navigate = useNavigate();
   const { page } = useParams();
   const [creatingEvent, setCreatingEvent] = useState(false);
@@ -252,7 +252,7 @@ const ToDoWidgetPage: FC = () => {
             <div className="ToDoItems">
               <ul>
                 {todos.map((todo) =>
-                  todo.dueDate ? (
+                  isToday(todo.dueDate) == true ? (
                     <li className="toDoInfo" key={todo.id}>
                       <p className="toDoTitle">{todo.text}</p>
                       {todo.description ? (
@@ -289,16 +289,14 @@ const ToDoWidgetPage: FC = () => {
   twidgetimage = upcomingImage;
 
   // Filter tasks with due dates greater than today
-  const upcomingTodos = todos.filter((todo) => {
-    if (todo.dueDate) {
-      const todoDate = new Date(todo.dueDate);
-      const today = new Date();
-      console.log(todoDate, today)
-      console.log(todoDate>today)
-      return todoDate > today;
-    }
-    return false;
-  });
+  function isUpcoming(formattedDateString) {
+    const today = new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+    }).format(new Date());
+  
+    return formattedDateString > today;
+  }
 
   WidgetSubPage = (
     <>
@@ -313,17 +311,19 @@ const ToDoWidgetPage: FC = () => {
       <div className="toDoElementContainers">
         <div className="ToDoItems">
           <ul>
-            {upcomingTodos.map((todo) => (
-              <li className="toDoInfo" key={todo.id}>
-                <p className="toDoTitle">{todo.text}</p>
-                {todo.description ? (
-                  <p className="todoDescription">{todo.description}</p>
-                ) : null}
-                {todo.dueDate ? (
-                  <p className="todoDueDate">{todo.dueDate}</p>
-                ) : null}
-              </li>
-            ))}
+          {todos.map((todo) =>
+                  isUpcoming(todo.dueDate) == true ? (
+                    <li className="toDoInfo" key={todo.id}>
+                      <p className="toDoTitle">{todo.text}</p>
+                      {todo.description ? (
+                        <p className="todoDescription">{todo.description}</p>
+                      ) : null}
+                      {todo.dueDate ? (
+                        <p className="todoDueDate">{todo.dueDate}</p>
+                      ) : null}
+                    </li>
+                  ) : null
+                )}
           </ul>
         </div>
         <div className="createToDoButtonContainer">
@@ -345,8 +345,6 @@ const ToDoWidgetPage: FC = () => {
     </>
   );
   break;
-
-      break;
     case "Starred":
       twidgetimage = starredImage;
       WidgetSubPage = <h1> Hello From the Settings Page</h1>;
