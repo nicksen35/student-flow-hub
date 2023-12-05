@@ -1245,3 +1245,13 @@ h1 {
 }
 
 .close:hover {color: white;}
+
+.todoitems
+{
+  height:52%;
+  overflow-y: scroll;
+}
+.todoitems::-webkit-scrollbar
+{
+  display:none;
+}

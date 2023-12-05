@@ -135,21 +135,21 @@ const Dashboard = () => {
     return (
       <>
         <div className="calendarwidget">
-          <div className="calendarwidgetheader">
+          <div className="calendarwidgetheader" onClick={prop.onClick}>
             <WidgetTitle
               widgettitle="Google Calendar"
               imageSource={calendarImage}
             />
           </div>
           <div className="calendarContent">
-            <div className="calendarEventsContent">
+            <div className="calendarEventsContent" onClick={prop.onClick}>
               <div className="calendarEventsContentText">
                 <div className="calendarEventHeaderContainer">
                   <h2 className="eventsHeader"> Events </h2>
                 </div>
                 {userevents.map((userEvent) => {
                   return (
-                    <div className="eventContent">
+                    <div className="eventContent" >
                       {" "}
                       {userEvent.event_summary}: {userEvent.event_starttime}{" "}
                     </div>
@@ -482,7 +482,7 @@ const Dashboard = () => {
     return (
       <>
         <div className="todowidget">
-          <div className="todowidgetheader">
+          <div className="todowidgetheader" onClick={prop.onClick}>
             <WidgetTitle widgettitle="To-Do List" imageSource={todoImage} />
           </div>
           <div className="dsb-tododropdown">
@@ -491,7 +491,7 @@ const Dashboard = () => {
                 {prop.WidgetName} <i className="dashboarddown"></i>
               </button>
             </div>
-            <div className="dsbtodo-content">
+            <div className="dsbtodo-content" >
               {todolistdropdown.map((options, index) => (
                 <a key={index} onClick={() => handleHeaderChange(index)}>
                   {options}
@@ -499,7 +499,7 @@ const Dashboard = () => {
               ))}
             </div>
           </div>
-          <div className="todoitems" onClick={prop.onClick}>{TDWidgetContent}</div>
+          <div className="todoitems" onClick={prop.onClick} >{TDWidgetContent}</div>
         </div>
       </>
     );
