@@ -23,8 +23,8 @@ const ClassroomWidgetPage: FC = () => {
   const [courseWork, setCourseWork] = useState();
   const [grades, setGrades] = useState([]);
   const dropdownoptions = [
-    "Classes",
     "Assignments",
+    "Classes",
     "Announcements",
     "Grades",
     "Teachers",

@@ -202,8 +202,11 @@ const Dashboard = () => {
               const sender = mail.gmail_sender;
               const subject = mail.gmail_subject;
               const snippet = mail.gmail_snippet;
-
-              const combinedText = `${sender}: ${subject} - ${snippet}`;
+              console.log(mail.gmail_subject);
+              console.log(mail.gmail_snippet);
+              const trimmedSubject = subject.slice(0, -2);
+              const combinedText = `${sender}: ${trimmedSubject} ${snippet}`;
+              
               const limitedText = limitText(combinedText, 27);
 
               const gmailContentClass = `gmailcontent${

@@ -1,10 +1,41 @@
 $onepxsolid: 1px solid black;
-.container
-{
-    height:85%;
+.container {
+  height: 85%;
+  overflow-y: scroll;
+}
+.container::-webkit-scrollbar {
+  display: none;
+}
+.largeCalendar {
+  height: 59vh;
+}
+.largeCalendar .react-calendar {
+  max-width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 8em;
+  height: 221px;
+}
+
+.largeCalendar .react-calendar__tile {
+  max-width: 100%;
+  padding: 5px 6.6667px;
+  text-align: center;
+  line-height: 55px;
+}
+
+.widgeteventContent {
+    padding-left:2%;
+    padding-top:2%;
+    border-bottom:$onepxsolid;
+    padding-bottom:2%;
+    font-weight:bold;
+}
+.widgetcalendarContent {
+    border:$onepxsolid;
+    height:84%;
     overflow-y: scroll;
 }
-.container::-webkit-scrollbar
+.widgetcalendarContent::-webkit-scrollbar
 {
     display:none;
 }

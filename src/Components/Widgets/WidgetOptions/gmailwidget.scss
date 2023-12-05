@@ -1,0 +1,45 @@
+$onepx-solid: 1px solid black;
+
+.gmailcontentholder {
+  height: 84.5%;
+  overflow-y: scroll;
+}
+.gmailcontentholder::-webkit-scrollbar {
+  display: none;
+}
+.gmailwidgetcontent {
+  padding-bottom: 1%;
+  border-top: $onepx-solid;
+  background-color: #f5f5f5;
+  font-weight: none;
+}
+.gmailcontentsep {
+  display: block;
+}
+.gmailtext {
+  margin-left: 2%;
+}
+.gmailwidgetcontent.unread
+{
+    background-color: white;
+}
+.gmailwidgetcontent.unread .gmailcontentp .gmailcontentsubject,.gmailcontent.unread .gmailcontentp .gmailcontentsender {
+    font-weight: bold;
+    margin: 0;
+  }
+
+  .gmailwidgetcontent {
+    border: 1px solid #ddd;
+    transition: background-color 0.1s linear, transform 0.1s linear; 
+  }
+  
+  .gmailwidgetcontent:hover {
+    transform: scale(1.03); 
+    cursor: pointer;
+    box-shadow: 5px;
+  }
+  
+  /* Additional styles for unread emails on hover */
+  .gmailwidgetcontent.unread:hover {
+    background-color: #e0e0e0;
+  }
